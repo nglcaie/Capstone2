@@ -926,19 +926,19 @@ def evaluation(request):
         improve_stop_words_test3,texts_test3,corpus_test3,lda_model3= cleaning3(raw_data_test3)
         #dominant and weightage
         dominant_topics3, topic_percentages3 = topics_per_document(model=lda_model3, corpus=corpus_test3, end=-1)
-        dom_plot3 = distrib_dominant(dominant_topics3,lda_model3,25)
-        weightage_plot3 = weightage_topic(topic_percentages3,lda_model3,25)
+        dom_plot3 = distrib_dominant(dominant_topics3,lda_model3,20)
+        weightage_plot3 = weightage_topic(topic_percentages3,lda_model3,20)
         word_list3 = topic_list(lda_model3,25)
-        count_graph3 = word_count_graph(lda_model3,25,improve_stop_words_test3,5,5)
+        count_graph3 = word_count_graph(lda_model3,25,improve_stop_words_test3,4,5)
 
         #question4
         improve_stop_words_test4,texts_test4,corpus_test4,lda_model4= cleaning4(raw_data_test4)
         #dominant and weightage
         dominant_topics4, topic_percentages4 = topics_per_document(model=lda_model4, corpus=corpus_test4, end=-1)
-        dom_plot4 = distrib_dominant(dominant_topics4,lda_model4,30)
-        weightage_plot4 = weightage_topic(topic_percentages4,lda_model4,30)
+        dom_plot4 = distrib_dominant(dominant_topics4,lda_model4,20)
+        weightage_plot4 = weightage_topic(topic_percentages4,lda_model4,20)
         word_list4 = topic_list(lda_model4,30)
-        count_graph4 = word_count_graph(lda_model4,30,improve_stop_words_test4,5,6)
+        count_graph4 = word_count_graph(lda_model4,30,improve_stop_words_test4,4,5)
 
         #question5
         improve_stop_words_test5,texts_test5,corpus_test5,lda_model5= cleaning5(raw_data_test5)
@@ -993,7 +993,8 @@ def evaluation(request):
 def student_list(request):
     context={}
     date2day = date.today() #datetime = date + time
-    answers = Answers.objects.all
+    answers = Answers.objects.all()
+    answers_count = answers.count()
     if (request.method == 'POST'):
         csvFile = request.FILES.get('file')
         if not csvFile.name.endswith('.csv'):
@@ -1021,9 +1022,9 @@ def student_list(request):
     searchthis_query = request.GET.get('searchthis')
     if searchthis_query != " " and searchthis_query is not None:
         answers = Answers.objects.filter(Q(numberID=searchthis_query)).distinct()
-
     context['date2day'] = date2day
     context['answers'] = answers
+    context['answers_count'] = answers_count
     return render(request,'admin/student_list.html',context)
     
 def student_answer(request, pk):
