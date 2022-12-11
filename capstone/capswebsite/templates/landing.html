@@ -1,0 +1,211 @@
+{% load static %}
+<html>
+<head>
+    <title>Landing Page</title>
+    <link rel="icon" href="{% static 'image/brain.png' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@1,100&family=Cedarville+Cursive&family=Cormorant+Garamond:wght@300&family=Inter:wght@100;200;400;500;700&family=Nunito:wght@400;500;600;800&display=swap');
+
+    body {
+
+        margin: 0px;
+        overflow:hidden;
+
+        background: linear-gradient(136.95deg, #FCFBFE 46.14%, #D8F2F2 88.42%);
+    }
+
+    /* .section {
+        text-align: center;
+    } */
+
+    .container {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* LEFT HALF */
+    .left-half {
+        padding-left:8%;
+        padding-top: 6%;
+        float: left;
+        width: 40%;
+        height: 100%;
+    }
+
+    .text-em {
+        margin-top: 8%;
+        margin-bottom: 8%;
+        font-family: 'Inter', sans-serif;
+        font-size: 4em;
+        color: #404040;
+
+        font-style: normal;
+        font-weight: 700;
+    }
+
+    hr.horizontal-gold {
+        margin-left:0;
+    }
+
+    .logo {
+        margin: 0;
+        height:85px;
+    }
+
+    p{
+        display: block;
+        margin-block-start: 0px;
+        margin-block-end: 0px;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+    }
+    .lorem-ipsum {
+        height: auto;
+        width: 330px;
+        margin-bottom: 10%;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+
+        color: #404040;
+    }
+
+    .button {
+        height: 37.33px;
+    }
+
+    .btn-lg {
+        width: 161.72px;
+        height: 37.33px;
+        color: white;
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+
+        background: #42CBCE;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-lg:hover {
+        background-color: #92C4C6;
+    }
+
+    .sign-up{
+        font-family: 'Inter';
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 13px;
+        line-height: 15px;
+    }
+    a {
+        text-decoration: none;
+        color: #42CBCE;
+    }
+    a:hover {
+    text-decoration: underline;
+    }
+
+
+
+    /****** RIGHT HALF */
+    .right-half {
+        float: left;
+        width: 40%;
+        height: 100%;
+        padding-left: 8%;
+        padding-top: 3%;
+    }
+
+    .elements{
+        width: 100%;
+        align-items: center;
+    }
+
+
+    /******* RESPONSIVENESS *******/
+    @media screen and (max-width: 600px) {
+        .logo{
+            margin-top: 35%;
+        }
+        
+        .right-half {
+            display: none;
+        }
+
+        .text-em {
+        margin-top: 15%;
+        margin-bottom: 15%;
+        font-family: 'Inter', sans-serif;
+        font-size: 4em;
+        color: #404040;
+
+        font-style: normal;
+        font-weight: 700;
+        }
+
+        .lorem-ipsum {
+            height: auto;
+            width: 300px;
+            margin-bottom: 20%;
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 500;
+            font-size: 16px;
+
+            color: #404040;
+        }
+    }
+
+    @media screen and (min-width: 1920px) {
+        body{
+            zoom: 140%;
+        }
+    }
+    /******* END RESPONSIVENESS *******/
+
+</style>
+
+<body>
+    <div class="container">
+        <!---------------- LEFT HALF ---------------->
+        <div class="left-half">
+            <img src="{% static 'image/plm-logo-landing.png' %}" class="logo"><br><br>
+            <hr class="horizontal-gold" width="90px" color="#D5A106" size="7em">
+            <p class="text-em"> Mental Health <br> Survey</p>
+        
+            <div class="lorem">
+                <p class="lorem-ipsum"> 
+                    An online mental health survey to monitor the mental health of PLM students.
+                </p>
+            </div>
+
+            <div class="button">
+                <a href="{% url 'start_survey' %}">
+                    <button class="btn btn-primary btn-lg">BEGIN</button>
+                </a>
+                        
+            </div>
+        </div>
+
+
+        <!---------------- RIGHT HALF ---------------->
+        <div class="right-half">
+            <img src="{% static 'image/elements.png' %}" class="elements">
+        </div>
+
+
+
+    </section>
+
+</body>
+</html>

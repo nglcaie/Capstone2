@@ -1,0 +1,264 @@
+{% load static %}
+
+{% include 'admin/admin_navbar.html' %}
+
+<style>
+    body {
+        margin: 0px;
+        min-height: 100vh;
+        background: linear-gradient(153.3deg, #FCFBFE 61.32%, #D8F2F2 106.14%);
+        background-repeat: no-repeat;
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 1em;
+    }
+
+    .date-time {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 1em;
+        color: #404040;
+        text-align: right;
+        margin-right: 2em;
+    }
+    
+    .centered-div{
+        /* background-color: yellow; */
+        margin: 3% 10% 10% 10%;
+        min-height: 270px;
+    }
+
+    .top-row {
+        width: auto;
+    }
+
+    .search-container{
+        display: inline-block;
+    }
+
+    input[type=text] {
+        padding: 6px;
+        border: none;
+        margin: 0px;
+        background: #f6f6f6;
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+    }
+    
+    .search-container button {
+        padding: 6px 10px;
+        background: #f6f6f6;
+        font-size: 18px;
+        border: none;
+        cursor: pointer;
+        margin: 0px;
+        color: gray;
+    }
+
+    .search-container button:hover {
+        background: #ccc;
+    }
+
+    .dl-csv{
+        float: right;
+    }
+
+    .dl-btn{
+        background-color: #5CC5A2;
+        border: none;
+        color: white;
+        padding: 13px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        
+        cursor: pointer;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 1em;
+        border-radius: 10px;
+    }
+
+    .dl-btn:hover {
+        background-color: #98E9CE;
+        color: white;
+    }
+
+    .stud-list-tbl{
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+        table-layout: auto;
+    }
+
+    thead td{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        color: #404040;
+        padding: 15px;
+    }
+
+    tbody td{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        color: #404040;
+        padding: 5px 15px;
+    }
+
+    td a{
+        text-decoration: none;
+        color:#404040
+    }
+
+    input[type=file]::file-selector-button {
+        background-color: white;
+        border: none;
+        color: #5CC5A2;
+        padding: 7px 13px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        
+        cursor: pointer;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 800;
+        font-size: 1em;
+        border-radius: 10px;
+        border: 2px solid #5CC5A2;
+    }
+    input[type=file]::file-selector-button:hover {
+        background-color: #98E9CE;
+        border: none;
+        color: white;
+        padding: 9px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        
+        cursor: pointer;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 800;
+        font-size: 1em;
+        border-radius: 10px;
+    }
+
+    .upload-div{
+        padding: 0% 10%;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 1em;
+        color: #404040;
+    }
+
+
+    .choose-file{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: .8em;
+        color: #404040;
+    }
+
+    .upload-btn{
+        background-color: #5CC5A2;
+        border: none;
+        color: white;
+        padding: 9px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        
+        cursor: pointer;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 800;
+        font-size: .8em;
+        border-radius: 10px;
+    }
+
+    .upload-btn:hover {
+        background-color: #98E9CE;
+        color: white;
+    }
+
+</style>
+
+{% block content %}
+
+
+    <p class="date-time">Today is {{date2day}}</p>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="upload-div">
+            <label>Upload CSV File</label>
+            <br><br>
+            <input class="choose-file" type="file" name="file">
+            <!-- <p>Only accepts CSV files</p> -->
+            <br><br>
+            <button class="upload-btn" type="submit">Upload</button>
+        </div>
+    </form>
+    {% for message in messages %}
+    {{message}}
+    {% endfor %} 
+
+    <div class="centered-div">
+        <div class="top-row">
+            <div class="search-container">
+                <form method="GET">
+                <input type="text" placeholder="Search" name="searchthis">
+                <button type="submit"><i class="fa fa-search"></i></button>
+                </form>
+            </div>
+            <div class="dl-csv">
+                <a href="{% url 'answers_csv'%}"><button class="dl-btn"> Download CSV </button></a>
+            </div>
+        </div>
+        
+        <br><br>
+        
+        <table class="stud-list-tbl">
+            <thead>
+            <tr>
+                <td width="12%"> Student No. </td>
+                <td width="20%"> Student Name </td>
+                <td width="5%"> Level </td>
+                <td width="5%"> Block </td>
+                <td width="25%"> College </td>
+                <td width="20%"> Program </td>
+                <td width="2%"></td>
+            </tr>
+            </thead>
+
+            <tbody>
+                {% for students in answers %}
+            <tr>
+                <td><a href="{% url 'student_answer' students.id %}"> {{students.numberID}} </a></td>
+                <td><a href="{% url 'student_answer' students.id %}"> {{students.lastName}}, {{students.firstName}} </a></td>
+                <td><a href="{% url 'student_answer' students.id %}"> {{students.year}} </a></td>
+                <td><a href="{% url 'student_answer' students.id %}"> {{students.block}} </a></td>
+                <td><a href="{% url 'student_answer' students.id %}"> {{students.college}} </a></td>
+                <td><a href="{% url 'student_answer' students.id %}"> {{students.course}} </a></td>
+            </tr>
+            {%endfor%}
+
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'image/brain.png' %}">
+    <title>Student</title>
+    <link rel="stylesheet" href="{% static '/css/admin_navbar.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div class="nav-bar-1">
+            <img src="{% static 'image/plm-logo.png' %}" style="vertical-align: middle">
+            &nbsp;&nbsp;
+            Mental Health Factors
+    </div>
+    <div class="nav-bar-2">
+        <p class="hello">Hello, Admin!</p>
+        <div class="nav-bar-2-right"></div>
+            <ul>
+                <li><a href="{% url 'evaluation' %}"> Evaluation </a></li>
+                <li><a href="{% url 'student_list' %}"> Students' Answers </a></li>
+            </ul>
+
+            <a href="{% url 'logout' %}">
+                <button class="btn-logout"><img src="{% static 'image/logout-icon.png' %}" height="12em">&nbsp; Log-out</button>
+            </a>
+        </div>
+    </div>
+
+    <div class="content">
+        {% block content %}
+
+        {% endblock %}
+    </div>
+    
+</body>
+</html>

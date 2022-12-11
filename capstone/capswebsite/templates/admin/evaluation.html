@@ -1,0 +1,507 @@
+{% load static %}
+
+{% include 'admin/admin_navbar.html' %}
+<html lang="en">
+  <head>
+<style>
+    body {
+        margin: 0px;
+        min-height: 100vh;
+        background: linear-gradient(155.57deg, #FDFBFE 36.97%, #D8F2F2 83.32%);
+        background-repeat: no-repeat;
+
+        overflow-x: hidden;
+    }
+    
+    .date-time {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 1em;
+        color: #404040;
+        text-align: right;
+        margin-right: 2em;
+    }
+
+    /* .title {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 2em;
+        text-align: center;
+        margin-top: 2em;
+
+        color: #404040;
+    } */
+
+    .analysis {
+        display: block;
+        max-width: 75%;
+        height: auto;
+        padding: 5%;
+        margin: 60px auto;
+
+        background: #FFFFFF;
+        box-shadow: 0px 14px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 30px;
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+    }
+
+    .analysis span {
+        font-family:'Inter';  
+        font-size: 20px;
+        font-weight: 700;
+        /* display: contents; */
+    }
+
+    .visualization{
+        /* background-color: #f6f6f6; */
+        width: auto;
+        height: auto;
+        display: block;
+        place-items: center;
+        place-content: center;
+        padding: 20px;
+    }
+
+    .plt-pic{
+        width: 100%;
+    }
+
+    input[type=file]::file-selector-button {
+        background-color: white;
+        border: none;
+        color: #5CC5A2;
+        padding: 7px 13px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        
+        cursor: pointer;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 800;
+        font-size: 1em;
+        border-radius: 10px;
+        border: 2px solid #5CC5A2;
+    }
+    input[type=file]::file-selector-button:hover {
+        background-color: #98E9CE;
+        border: none;
+        color: white;
+        padding: 9px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        
+        cursor: pointer;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 800;
+        font-size: 1em;
+        border-radius: 10px;
+    }
+
+    .upload-div{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 1em;
+        color: #404040;
+    }
+
+
+    .choose-file{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: .8em;
+        color: #404040;
+    }
+
+    .upload-btn{
+        background-color: #5CC5A2;
+        border: none;
+        color: white;
+        padding: 9px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        
+        cursor: pointer;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 800;
+        font-size: .8em;
+        border-radius: 10px;
+    }
+
+    .upload-btn:hover {
+        background-color: #98E9CE;
+        color: white;
+    }
+
+    .jump{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: .8em;
+        text-decoration: none;
+        color:#5CC5A2;
+    }
+    .jump:hover{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: .8em;
+        text-decoration: none;
+        color:#3fa181;
+    }
+
+
+    .table{
+        width: 100%;
+        margin-left: 10%;
+    }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</head>
+<body>
+{% block content %}
+
+<p class="date-time">Today is {{date2day}}</p>
+    <table class="table">
+        <td>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="upload-div">
+                <label>Upload CSV File</label>
+                <br><br>
+                <input class="choose-file" type="file" name="file">
+                <!-- <p>Only accepts CSV files</p> -->
+                <br><br>
+                <button class="upload-btn" type="submit">Upload</button>
+            </div>
+        </form>
+        {% for message in messages %}
+        {{message}}
+        {% endfor %}
+        </td>
+
+        <td>
+        <br><br>
+        <a class="jump" href="#Q1">Jump to Question 1</a> <br>
+        <a class="jump" href="#Q2">Jump to Question 2</a> <br>
+        <a class="jump" href="#Q3">Jump to Question 3</a> <br>
+        <a class="jump" href="#Q4">Jump to Question 4</a> <br>
+        <a class="jump" href="#Q5">Jump to Question 5</a><br>
+        <a class="jump" href="{% url 'word_cloud_page' %}">See Word Cloud</a>
+        </td>
+    </table>
+{% if param == "Empty" %}
+                
+    <div class="visualization">
+    </div>         
+
+    <div class="container">
+        <div class="accordion" id="accordionExample">
+            <div class="card" style="border-radius:20px">
+              <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                     Trained LDA Model 1 Topic Results
+                  </button>
+                </h2>
+              </div>
+          
+              <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                <div class="card-body">
+                  <img src="{% static 'image/md1.png' %}" height="525">
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="accordion" id="accordionExample">
+            <div class="card" style="border-radius:20px">
+              <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                    Trained LDA Model 2 Topic Results
+                  </button>
+                </h2>
+              </div>
+          
+              <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                <div class="card-body">
+                  <img src="{% static 'image/md2.png' %}" height="400">
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="accordion" id="accordionExample">
+            <div class="card" style="border-radius:20px">
+              <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                    Trained LDA Model 3 Topic Results
+                  </button>
+                </h2>
+              </div>
+          
+              <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                <div class="card-body">
+                  <img src="{% static 'image/md3.png' %}" height="500">
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="accordion" id="accordionExample">
+            <div class="card" style="border-radius:20px">
+              <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+                    Trained LDA Model 4 Topic Results
+                  </button>
+                </h2>
+              </div>
+              <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
+                <div class="card-body">
+                  <img src="{% static 'image/md4.png' %}" height="525">
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="accordion" id="accordionExample">
+            <div class="card" style="border-radius:20px">
+              <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
+                    Trained LDA Model 5 Topic Results
+                  </button>
+                </h2>
+              </div>
+          
+              <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordionExample">
+                <div class="card-body">
+                  <img src="{% static 'image/md5.png' %}" height="400">
+                </div>
+              </div>
+            </div>
+          </div>
+    </div>
+{% else %}
+        <!-- Question 1 -->
+        <div class="analysis"> 
+            
+            <span id="Q1">Question #1</span>
+            <br><br>
+            1. How does your environment affect your studying?
+            <br><br><br>    
+                <div class="accordion" id="accordionExample">
+                    <div class="card" style="border-radius:20px">
+                      <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                          <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                             Keyword list and Word Count in Topics
+                          </button>
+                        </h2>
+                      </div>
+                  
+                      <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                        <div class="card-body">
+                            {% for topic in word_list1 %}
+                              {{topic}}
+                                <br><br>
+                            {%endfor%}
+                            <br>
+                            <img class="plt-pic" src='data:image/png;base64,{{ count_graph1 }}'>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            <br>
+            <div class="visualization">
+            
+                <img class="plt-pic" src='data:image/png;base64,{{ dominant1 }}'>
+                <br><br>
+                <img class="plt-pic" src='data:image/png;base64,{{ weightage1 }}'>
+            
+            </div>
+        </div>
+        
+        <!-- Question 2 -->
+        <div class="analysis"> 
+            
+            <span id="Q2">Question #2</span>
+            <br><br>
+            2. How do you feel about the workload that is given to you during online classes?
+            <br><br><br>    
+                <div class="accordion" id="accordionExample">
+                    <div class="card" style="border-radius:20px">
+                      <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                          <button class="btn bt-link" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                            Keyword list and Word Count in Topics
+                          </button>
+                        </h2>
+                      </div>
+                  
+                      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                        <div class="card-body">
+                            {% for topic in word_list2 %}
+                            {{topic}}
+                            <br><br>
+                            {%endfor%}
+                            <br>
+                            <img class="plt-pic" src='data:image/png;base64,{{ count_graph2 }}'>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            <div class="visualization">
+            
+                <img class="plt-pic" src='data:image/png;base64,{{ dominant2 }}'>
+                <br><br>
+                <img class="plt-pic" src='data:image/png;base64,{{ weightage2 }}'>
+            
+            </div>
+           
+        </div>
+
+        <!-- Question 3 -->
+        <div class="analysis"> 
+            
+            <span id="Q3">Question #3</span>
+            <br><br>
+            3. What can you say about your physical health in relation to online learning? (Sleep quality, physical activity, feelings of mental or physical fatigue, etc.)
+            <br><br><br>
+            <div class="accordion" id="accordionExample">
+                <div class="card" style="border-radius:20px">
+                  <div class="card-header" id="headingOne">
+                    <h2 class="mb-0">
+                      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                        Keyword list and Word Count in Topics
+                      </button>
+                    </h2>
+                  </div>
+              
+                  <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                    <div class="card-body">
+                    {% for topic in word_list3 %}
+                        {{topic}}
+                        <br><br>
+                    {%endfor%}
+                    <br>
+                    <img class="plt-pic" src='data:image/png;base64,{{ count_graph3 }}'>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <br>
+            <div class="visualization">
+            
+                <img class="plt-pic" src='data:image/png;base64,{{ dominant3 }}'>
+                <br><br>
+                <img class="plt-pic" src='data:image/png;base64,{{ weightage3 }}'>
+            
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="analysis"> 
+            
+            <span id="Q4">Question #4</span>
+            <br><br>
+            4. Can you say that your motivation decreased in an online set-up? If yes, how?
+            <br><br><br>
+            <div class="accordion" id="accordionExample">
+                <div class="card" style="border-radius:20px">
+                  <div class="card-header" id="headingOne">
+                    <h2 class="mb-0">
+                      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+                        Keyword list and Word Count in Topics
+                      </button>
+                    </h2>
+                  </div>
+                  <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
+                    <div class="card-body">
+                        {% for topic in word_list4 %}
+                        {{topic}}
+                        <br><br>
+                    {%endfor%}
+                    <br>
+                    <img class="plt-pic" src='data:image/png;base64,{{ count_graph4 }}'>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <br>
+            <div class="visualization">
+            
+                <img class="plt-pic" src='data:image/png;base64,{{ dominant4 }}'>
+                <br><br>
+                <img class="plt-pic" src='data:image/png;base64,{{ weightage4 }}'>
+            
+            </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="analysis"> 
+            
+            <span id="Q5">Question #5</span>
+            <br><br>
+            5. How do you think your socioeconomic status affects your mental health during online class?
+            <br><br><br>
+            <div class="accordion" id="accordionExample">
+                <div class="card" style="border-radius:20px">
+                  <div class="card-header" id="headingOne">
+                    <h2 class="mb-0">
+                      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
+                        Keyword list and Word Count in Topics
+                      </button>
+                    </h2>
+                  </div>
+              
+                  <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordionExample">
+                    <div class="card-body">
+                        {% for topic in word_list5 %}
+                        {{topic}}
+                        <br><br>
+                    {%endfor%}
+                    <br>
+                    <img class="plt-pic" src='data:image/png;base64,{{ count_graph5 }}'>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <div class="visualization">
+            
+                <img class="plt-pic" src='data:image/png;base64,{{ dominant5 }}'>
+                <br><br>
+                <img class="plt-pic" src='data:image/png;base64,{{ weightage5 }}'>
+            
+            </div>
+        </div>
+{% endif %}
+</div>
+
+<br><br><br><br>
+
+{% endblock %}
+
+</body>
+</html>

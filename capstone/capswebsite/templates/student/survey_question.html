@@ -1,0 +1,528 @@
+{% load static %}
+
+{% include 'student/student_navbar.html' %}
+
+<style>
+    body {
+        margin: 0px;
+        min-height: 100vh;
+        background: linear-gradient(155.57deg, #FCFBFE 36.97%, #D8F2F2 83.32%);
+        background-repeat: no-repeat;
+    }
+
+    .date-time {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 1em;
+        color: #404040;
+        text-align: right;
+        margin-right: 2em;
+    }
+
+    .title {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 2em;
+        text-align: center;
+        margin-top: .8em;
+
+        color: #404040;
+    }
+
+    .error{
+        font-size: 10px;
+        width: 100%;
+        color: #DA2929;
+        margin-top: 0px;
+        margin-left: 23%;
+        line-height: 10px;
+    }
+
+    .qna {
+        display: block;
+        min-width: 100px;
+        max-width: 55%;
+        height: auto;
+        padding: 40px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 60px;
+
+        background: #FFFFFF;
+        box-shadow: 0px 14px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 30px;
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+    }
+
+    .qna span {
+        font-family: 'Inter';
+        font-size: 20px;
+        font-weight: 700;
+        /* display: contents; */
+    }
+
+    textarea {
+        font-family: 'Inter';
+        font-size: 14px;
+        resize: none;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 95%;
+        height: 70px;
+    }
+
+    .submit-btn {
+        width: 200px;
+        height: 45px;
+        color: white;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+
+        background: #42CBCE;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        margin: auto;
+        display: block;
+    }
+
+    .submit-btn:hover {
+        background-color: #92C4C6;
+    }
+
+    a {
+        text-decoration: none;
+        color: #42CBCE;
+    }
+
+
+
+    .container{
+        min-width: 200px;
+        max-width: 38%;
+        border: #42CBCE;
+        border-width: 2px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 30px;
+        padding: 0% 5%;
+    }
+        
+  
+    label{
+        width: 140px;
+        display: inline-block;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 24px;
+
+        color: #8F8F8F;
+    }
+
+    .form-control {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 17px;
+
+        width: 282.43px;
+        height: 28px;
+        padding: 12px 15px;
+        margin: 4px 0px;
+        box-sizing: border-box;
+        margin-left: 10px;
+
+        background: #D9D9D9;
+        border-radius: 5px;
+        border: none;
+        color: #8F8F8F;
+
+        color: #404040;
+    }
+
+    .form-control1 {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 17px;
+
+        box-sizing: border-box;
+        margin: 4px 0;
+        margin-left: 10px;
+        padding: 0px 10px;
+        width: 282.43px;
+        height: 28px;
+
+
+        background: #D9D9D9;
+        border-radius: 5px;
+        border: none;
+        color: #8F8F8F;
+        color: #404040;
+    }
+
+    .form-control1blk {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 17px;
+
+        box-sizing: border-box;
+        margin: 4px 0;
+        margin-left: 10px;
+        padding: 12px 15px;
+        width: 282.43px;
+        height: 28px;
+
+
+        background: #D9D9D9;
+        border-radius: 5px;
+        border: none;
+        color: #8F8F8F;
+        color: #404040;
+    }
+
+    #count-words{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+
+        color: #8F8F8F;;
+    }
+    #count-words2{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+
+        color: #8F8F8F;;
+    }
+    #count-words3{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+
+        color: #8F8F8F;;
+    }
+    #count-words4{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+
+        color: #8F8F8F;;
+    }
+    #count-words5{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+
+        color: #8F8F8F;;
+    }
+
+    .min-10{
+        width: auto;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        display: flex;
+        place-items: center;
+        place-content: center;
+
+        color: #DA2929;
+    }
+
+    /******* RESPONSIVENESS *******/
+    @media screen and (max-width: 600px) {
+        .title{
+            font-size: 1.8em;
+        }
+        .label{
+            display: block;
+        }
+        .form-control{
+            margin-left: 0%;
+            width: 230px;
+        }
+        .form-control1blk{
+            margin-left: 0%;
+            width: 230px;
+        }
+        .form-control1{
+            margin-left: 0%;
+            width: 230px;
+        }
+    }
+
+    @media screen and (min-width: 1920px) {
+        body{
+            zoom: 140%;
+        }
+    }
+</style>
+
+{% block content%}
+
+<p class="date-time">Today is {{date2day}}</p>
+
+{% for message in messages %}
+<label class="min-10">{{message}}</label> 
+{% endfor %}
+
+<div class="title">Survey Questionnaire</div>
+ 
+<form method="post" id="personForm" data-cities-url="{% url 'ajax_load_slot' %}">
+    {% csrf_token %}
+
+    <div class="container">
+
+        <label>Email</label>
+        {{register.email}} <br>
+        <label class="error">
+            {{register.email.errors}}
+        </label>
+        <br>
+       
+        <label>Student Number</label>
+        {{register.numberID}} <br>
+        <label class="error">
+            {{register.numberID.errors}}
+        </label>
+        <br>
+       
+        <label>First Name</label>
+        {{register.firstName}} <br>
+        <label class="error">
+            {{register.firstName.errors}}
+        </label>
+        <br>
+        
+        <label>Last Name</label>
+        {{register.lastName}} <br>
+        <label class="error">
+            {{register.lastName.errors}}
+        </label>
+        <br>
+        
+        <label>College</label>
+        {{register.college}} <br>
+        <label class="error">
+            {{register.college.errors}}
+        </label>
+        <br>
+        
+        <label>Program</label>
+        {{register.course}} <br>
+        <label class="error">
+            {{register.course.errors}}
+        </label>
+        <br>
+        
+        <label>Year</label>
+        {{register.year}} <br>
+        <label class="error">
+            {{register.year.errors}}
+        </label>
+        <br>
+
+        <label>Block</label>
+        {{register.block}} <br>
+        <label class="error">
+            {{register.block.errors}}
+        </label>
+
+    </div>
+
+
+
+    <br><br><br><br>
+    <!-- Question 1 -->
+    <div class="qna">
+        {{register.student}}
+        <!-- do not remove -->
+        <span>Question #1</span>
+        <br><br>
+        1. How does your environment affect your studying?
+        <br><br><br><br>
+        <label for="answer">Answer:</label>
+        <br><br>
+        {{register.question1}} <br>
+        <span id="count-words"></span>
+        <input id="change" name="change" type="hidden">
+        <label class="error">
+            {{register.question1.errors}}
+        </label>
+    </div>
+
+    <!-- Question 2 -->
+    <div class="qna">
+
+        <span>Question #2</span>
+        <br><br>
+        2. How do you feel about the workload that is given to you during online classes?
+        <br><br><br><br>
+
+        <label for="answer">Answer:</label>
+        <br><br>
+        {{register.question2}} <br>
+        <span id="count-words2"></span>
+        <input id="change2" name="change2" type="hidden">
+        <label class="error">
+            {{register.question2.errors}}
+        </label>
+    </div>
+
+    <!-- Question 3 -->
+    <div class="qna">
+
+        <span>Question #3</span>
+        <br><br>
+        3. What can you say about your physical health in relation to online learning? (Sleep quality, physical
+        activity, feelings of mental or physical fatigue, etc.)
+        <br><br><br><br>
+
+        <label for="answer">Answer:</label>
+        <br><br>
+        {{register.question3}} <br>
+        <span id="count-words3"></span>
+        <input id="change3" name="change3" type="hidden">
+        <label class="error">
+            {{register.question3.errors}}
+        </label>
+    </div>
+
+    <!-- Question 4 -->
+    <div class="qna">
+
+        <span>Question #4</span>
+        <br><br>
+        4. Can you say that your motivation decreased in an online set-up? If yes, how?
+        <br><br><br><br>
+
+        <label for="answer">Answer:</label>
+        <br><br>
+        {{register.question4}} <br>
+        <span id="count-words4"></span>
+        <input id="change4" name="change4" type="hidden">
+        <label class="error">
+            {{register.question4.errors}}
+        </label>
+    </div>
+
+    <!-- Question 5 -->
+    <div class="qna">
+
+        <span>Question #5</span>
+        <br><br>
+        5. How do you think your socioeconomic status affects your mental health during online class?
+        <br><br><br><br>
+        <label for="answer">Answer:</label>
+        <br><br>
+        {{register.question5}}<br>
+        <span id="count-words5"></span>
+        <input id="change5" name="change5" type="hidden">
+        <label class="error">
+            {{register.question5.errors}}
+        </label>
+    </div>
+
+    <input type="submit" value="Submit" class="submit-btn">
+</form>
+</div>
+
+<br><br><br><br>
+
+
+
+
+
+
+<a href="{% url 'thankyou' %}">submit</a>
+{% endblock %}
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    $("#college").change(function () {
+        const url = $("#personForm").attr("data-cities-url");  // get the url of the `load_cities` view
+        const collegeId = $(this).val();  // get the selected country ID from the HTML input
+
+        $.ajax({                       // initialize an AJAX request
+            url: url,                    // set the url of the request (= /persons/ajax/load-cities/ )
+            data: {
+                'college_Id': collegeId     // add the country id to the GET parameters
+            },
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+                $("#course").html(data);  // replace the contents of the city input with the data that came from the server
+                /*
+ 
+                let html_data = '<option value="">---------</option>';
+                data.forEach(function (city) {
+                    html_data += `<option value="${city.id}">${city.name}</option>`
+                });
+                console.log(html_data);
+                $("#id_city").html(html_data);
+ 
+                */
+            }
+        });
+
+    });
+
+    function countWords(self) {
+        var spaces = self.value.match(/\S+/g);
+        var words = spaces ? spaces.length : 0;
+        $("#change").val(words);
+
+        document.getElementById("count-words").innerHTML = words + " words";
+    }
+    function countWords2(self) {
+        var spaces = self.value.match(/\S+/g);
+        var words = spaces ? spaces.length : 0;
+        $("#change2").val(words);
+
+        document.getElementById("count-words2").innerHTML = words + " words";
+    }
+    function countWords3(self) {
+        var spaces = self.value.match(/\S+/g);
+        var words = spaces ? spaces.length : 0;
+        $("#change3").val(words);
+
+        document.getElementById("count-words3").innerHTML = words + " words";
+    }
+    function countWords4(self) {
+        var spaces = self.value.match(/\S+/g);
+        var words = spaces ? spaces.length : 0;
+        $("#change4").val(words);
+
+        document.getElementById("count-words4").innerHTML = words + " words";
+    }
+    function countWords5(self) {
+        var spaces = self.value.match(/\S+/g);
+        var words = spaces ? spaces.length : 0;
+        $("#change5").val(words);
+
+        document.getElementById("count-words5").innerHTML = words + " words";
+    }
+</script>
+</body>
+
+</html>

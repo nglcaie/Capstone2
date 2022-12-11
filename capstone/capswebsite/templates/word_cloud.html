@@ -1,0 +1,247 @@
+{% load static %}
+
+{% include 'student/student_navbar.html' %}
+
+<style>
+    body {
+        margin: 0px;
+        min-height: 100vh;
+        background: linear-gradient(155.57deg, #FDFBFE 36.97%, #D8F2F2 83.32%);
+        background-repeat: no-repeat;
+
+        overflow-x: hidden;
+    }
+    
+    .date-time {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 1em;
+        color: #404040;
+        text-align: right;
+        margin-right: 2em;
+    }
+
+    /* .title {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 2em;
+        text-align: center;
+        margin-top: 2em;
+
+        color: #404040;
+    } */
+
+    .analysis {
+        display: block;
+        max-width: 75%;
+        height: auto;
+        padding: 5%;
+        margin: 60px auto;
+
+        background: #FFFFFF;
+        box-shadow: 0px 14px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 30px;
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+    }
+
+    .analysis span {
+        font-family:'Inter';  
+        font-size: 20px;
+        font-weight: 700;
+        /* display: contents; */
+    }
+
+    .visualization{
+        /* background-color: #f6f6f6; */
+        width: auto;
+        height: auto;
+        display: flex;
+        place-items: center;
+        place-content: center;
+        padding: 20px;
+    }
+
+    .plt-pic{
+        width: 100%;
+    }
+
+    input[type=file]::file-selector-button {
+        background-color: white;
+        border: none;
+        color: #5CC5A2;
+        padding: 7px 13px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        
+        cursor: pointer;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 800;
+        font-size: 1em;
+        border-radius: 10px;
+        border: 2px solid #5CC5A2;
+    }
+    input[type=file]::file-selector-button:hover {
+        background-color: #98E9CE;
+        border: none;
+        color: white;
+        padding: 9px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        
+        cursor: pointer;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 800;
+        font-size: 1em;
+        border-radius: 10px;
+    }
+
+    .upload-div{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 1em;
+        color: #404040;
+    }
+
+
+    .choose-file{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: .8em;
+        color: #404040;
+    }
+
+    .upload-btn{
+        background-color: #5CC5A2;
+        border: none;
+        color: white;
+        padding: 9px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        
+        cursor: pointer;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 800;
+        font-size: .8em;
+        border-radius: 10px;
+    }
+
+    .upload-btn:hover {
+        background-color: #98E9CE;
+        color: white;
+    }
+
+    a{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: .8em;
+        text-decoration: none;
+        color:#5CC5A2;
+    }
+    a:hover{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: .8em;
+        text-decoration: none;
+        color:#3fa181;
+    }
+
+    .table{
+        width: 100%;
+        margin-left: 10%;
+    }
+</style>
+
+{% block content %}
+
+<p class="date-time">Today is {{date2day}}</p>
+    <table class="table">
+        <td>
+        <br><br>
+        <a href="#Q1">Jump to Question 1</a> <br>
+        <a href="#Q2">Jump to Question 2</a> <br>
+        <a href="#Q3">Jump to Question 3</a> <br>
+        <a href="#Q4">Jump to Question 4</a> <br>
+        <a href="#Q5">Jump to Question 5</a>
+        </td>
+    </table>
+{% if param == "Empty" %}
+   
+                <div class="visualization">
+                  
+                </div>
+{% else %}
+        <!-- Question 1 -->
+        <div class="analysis"> 
+            
+            <span id="Q1">Question #1</span>
+            <br><br>
+            1. How does your environment affect your studying?     
+                <div class="visualization">
+                    <img class="plt-pic" src='data:image/png;base64,{{ word_cloud1 }}'>
+                </div>
+       </div>
+        
+        <!-- Question 2 -->
+        <div class="analysis"> 
+            
+            <span id="Q2">Question #2</span>
+            <br><br>
+            2. How do you feel about the workload that is given to you during online classes?          
+                <div class="visualization">
+                    <img class="plt-pic" src='data:image/png;base64,{{ word_cloud2 }}'>
+                </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="analysis"> 
+            
+            <span id="Q3">Question #3</span>
+            <br><br>
+            3. What can you say about your physical health in relation to online learning? (Sleep quality, physical activity, feelings of mental or physical fatigue, etc.) 
+            <div class="visualization">
+                <img class="plt-pic" src='data:image/png;base64,{{ word_cloud3 }}'>
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="analysis"> 
+            
+            <span id="Q4">Question #4</span>
+            <br><br>
+            4. Can you say that your motivation decreased in an online set-up? If yes, how?
+            <div class="visualization">
+                <img class="plt-pic" src='data:image/png;base64,{{ word_cloud4 }}'>
+            </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="analysis"> 
+            
+            <span id="Q5">Question #5</span>
+            <br><br>
+            5. How do you think your socioeconomic status affects your mental health during online class?
+
+            <div class="visualization">
+                <img class="plt-pic" src='data:image/png;base64,{{ word_cloud5 }}'>
+            </div>
+        </div>
+{% endif %}
+<br><br><br><br>
+
+{% endblock %}

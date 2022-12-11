@@ -1,0 +1,214 @@
+{% load static %}
+<html>
+
+<head>
+    <title>Sign Up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@1,100&family=Cedarville+Cursive&family=Cormorant+Garamond:wght@300&family=Inter:wght@100;200;400;500;700&family=Nunito:wght@400;500;600;800&display=swap');
+
+    body {
+
+        margin: 0px;
+        position: relative;
+        min-height: 100vh;
+        max-width: 400px;
+        line-height: 150%;
+        overflow: hidden;
+
+        background: linear-gradient(136.95deg, #FCFBFE 46.14%, #D8F2F2 88.42%);
+    }
+
+    .header {
+        /* background-color: red; */
+        width: 1280px;
+        height: 71px;
+        position: absolute;
+        left: 440px;
+        top: 44px;
+    }
+
+    .container-login {
+        width: 400px;
+        height: 322px;
+        margin-top: -446px;
+        margin-left: 500px;
+        padding-bottom:20px;
+        background: #FFFFFF;
+        box-shadow: 0px 14px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 43px;
+
+        align-items: center;
+    }
+
+    .text-em {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 32px;
+        line-height: 39px;
+        text-align: center;
+        margin-top: 0.7em;
+        margin-bottom: 0.9em;
+
+        color: #404040;
+    }
+
+    input[type=password] {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 17px;
+
+        width: 282.43px;
+        height: 28px;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        margin-left: 60px;
+
+        background: #D9D9D9;
+        border-radius: 5px;
+        border: none;
+        color: #8F8F8F;
+    }
+
+    input[type=text] {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 17px;
+
+        width: 282.43px;
+        height: 28px;
+        padding: 12px 20px;
+        margin: 10px 0;
+        box-sizing: border-box;
+        margin-left: 60px;
+
+        background: #D9D9D9;
+        border-radius: 5px;
+        border: none;
+        color: #8F8F8F;
+    }
+
+    .btn-lg {
+        width: 161.72px;
+        height: 37.33px;
+        color: white;
+
+        margin-left: 120px;
+        margin-top: 10px;
+  
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+
+        background: #42CBCE;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-lg:hover {
+        background-color: #92C4C6;
+    }
+
+    .sign-up {
+        font-family: 'Inter';
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 15px;  
+        margin-left: 60px;
+    }
+
+    a {
+        text-decoration: none;
+        color: #42CBCE;
+    }
+    a:hover {
+    text-decoration: underline;
+    } 
+
+    .blue-pill{
+        margin-left: 243px;
+        margin-top: 196.69px;
+    }
+    .violet-cell{
+        width: 105px;
+        height: 106px;
+        margin-left: 969px;
+        margin-top: 76.54px;
+    }
+
+    .error{
+        margin: 0px 0px 0px 60px;
+        color: #D60000;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 11px;
+    }
+
+
+
+</style>
+
+
+<body>
+
+    <div class="images">
+        <img src="{% static 'image/pill-blue-2.png' %}" style="width:132px; height:134px;" class="blue-pill" >
+        <img src="{% static 'image/cell-violet-2.png' %}" style="width:132px; height:134px;" class="violet-cell" >
+
+    
+    </div>
+    <div class="header">
+        <a href="{% url 'index' %}">
+            <img src="{% static 'image/mental_header.png' %}" style="width:489px;height:111px;">
+        </a>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <div class="container-login">
+        <br>
+        <p class="text-em"> LOGIN </p>
+        
+        <form method="POST">
+            {% csrf_token %}
+
+            <input type="text" id="lname" name="username" placeholder="Email (Ex. jdelacruz2019@plm.edu.ph)"><br>
+            <input type="password" id="college" name="password" placeholder="Password">
+        
+            <p class="error">
+                {% for message in messages %}
+                {{message}}
+                {% endfor %}
+            </p>
+
+        <p class="sign-up" style="color: #8F8F8F;"> Don't have an account? <a href="{% url 'sign_up' %}"> Sign up </a></p>
+        <a href="{% url 'start_survey' %}">
+            <button class="btn btn-primary btn-lg" type="submit">LOG IN</button>
+
+        </a>
+        
+        </form>
+
+        
+
+    </div>
+
+</body>
+</html>

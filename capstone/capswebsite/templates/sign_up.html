@@ -1,0 +1,342 @@
+{% load static %}
+<html>
+
+<head>
+    <title>Sign Up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@1,100&family=Cedarville+Cursive&family=Cormorant+Garamond:wght@300&family=Inter:wght@100;200;400;500;700&family=Nunito:wght@400;500;600;800&display=swap');
+
+    body {
+
+        margin: 0px;
+        position: relative;
+        min-height: 100vh;
+        max-width: 400px;
+        line-height: 150%;
+        overflow-x: hidden;
+
+        background: linear-gradient(136.95deg, #FCFBFE 46.14%, #D8F2F2 88.42%);
+    }
+
+    .header {
+        /* background-color: red; */
+        width: 1280px;
+        height: 71px;
+        position: absolute;
+        left: 440px;
+        top: 44px;
+    }
+
+    .container-login {
+        width: 400px;
+        height:  970px;
+        margin-top: -472px;
+        margin-left: 500px;
+        background: #FFFFFF;
+        box-shadow: 0px 14px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 43px;
+
+        align-items: center;
+    }
+
+    .text-em {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 32px;
+        line-height: 39px;
+        text-align: center;
+
+        color: #404040;
+    }
+
+    .form-control {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 17px;
+
+        width: 282.43px;
+        height: 28px;
+        padding: 12px 15px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        margin-left: 60px;
+
+        background: #D9D9D9;
+        border-radius: 5px;
+        border: none;
+        color: #8F8F8F;
+
+        color: #404040;
+    }
+
+    .form-control1 {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 17px;
+
+        box-sizing: border-box;
+        margin: 8px 0;
+        margin-left: 60px;
+        padding: 0px 20px;
+        width: 282.43px;
+        height: 28px;
+
+
+        background: #D9D9D9;
+        border-radius: 5px;
+        border: none;
+        color: #8F8F8F;
+    }   
+
+    .form-control1blk {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 17px;
+
+        box-sizing: border-box;
+        margin: 8px 0;
+        margin-left: 60px;
+        padding: 0px 25px;
+        width: 282.43px;
+        height: 28px;
+
+
+        background: #D9D9D9;
+        border-radius: 5px;
+        border: none;
+        color: #8F8F8F;
+    }
+
+    input[type=tel] {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 17px;
+
+        width: 282.43px;
+        height: 28px;
+        padding: 12px 20px;
+        margin: 10px 0;
+        box-sizing: border-box;
+        margin-left: 60px;
+
+        background: #D9D9D9;
+        border-radius: 5px;
+        border: none;
+        color: #8F8F8F;
+    }
+
+    .btn-lg {
+        width: 161.72px;
+        height: 37.33px;
+        color: white;
+
+        margin-left: 110px;
+        margin-top: 10px;
+  
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+
+        background: #42CBCE;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-lg:hover {
+        background-color: #92C4C6;
+    }
+
+    .sign-up {
+        font-family: 'Inter';
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 15px;  
+        margin-left: 60px;
+        margin-top: -20px;;
+    }
+
+    a {
+        text-decoration: none;
+        color: #42CBCE;
+    }
+    a:hover {
+    text-decoration: underline;
+    }
+
+    .blue-pill{
+        margin-left: 243px;
+        margin-top: 196.69px;
+    }
+    .violet-cell{
+        width: 105px;
+        height: 106px;
+        margin-left: 969px;
+        margin-top: 76.54px;
+    }
+
+    label{
+        display: block;
+        margin-left: 75px;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 24px;
+        display: flex;
+        align-items: center;
+
+        color: #8F8F8F;
+    }
+
+    .errorlist{
+        color: #D60000;
+        font-size: 11px;
+        margin: 0px;
+        padding: 0px 15px;
+
+    }
+
+</style>
+
+
+<body>
+
+    <div class="images">
+        <img src="{% static 'image/pill-blue-2.png' %}" style="width:132px; height:134px;" class="blue-pill" >
+        <img src="{% static 'image/cell-violet-2.png' %}" style="width:132px; height:134px;" class="violet-cell" >
+
+    
+    </div>
+    <div class="header">
+        <a href="{% url 'index' %}">
+            <img src="{% static 'image/mental_header.png' %}" style="width:489px;height:111px;">
+        </a>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <div class="container-login">
+        <br>
+        <p class="text-em"> REGISTER </p>
+        {% for message in messages %}
+        {{message}}
+        {% endfor %}        
+        <form method="post" id="personForm" data-cities-url="{% url 'ajax_load_slot' %}">
+            {% csrf_token %}
+            <label>Email</label>
+            {{register.email}}  <br>
+            <label class="error">
+                {{register.email.errors}}
+            </label>
+
+            <label>Student Number</label>
+            {{register.numberID}} <br>
+            <label class="error">
+                {{register.numberID.errors}} 
+            </label>
+            <label>First Name</label>
+            {{register.firstName}} <br>
+            <label class="error">
+                {{register.firstName.errors}}
+            </label>
+            <label>Last Name</label>
+            {{register.lastName}} <br>
+            <label class="error">
+                {{register.lastName.errors}}
+            </label>
+            <label>Password</label>
+            {{register.password1}} <br>
+            <label class="error">
+                {{register.password1.errors}}
+            </label>
+            <label>Confirm Password</label>
+            {{register.password2}} <br>
+            <label class="error">
+                {{register.password2.errors}} <br><br>
+            </label>
+
+            <label>College</label>
+            {{register.college}} <br>
+            <label class="error">
+                {{register.college.errors}}
+            </label>
+
+            <label>Program</label>
+            {{register.course}} <br>
+            <label class="error">
+                {{register.course.errors}}
+            </label>
+
+            <label>Year</label>
+            {{register.year}} <br>
+            <label class="error">
+                {{register.year.errors}}
+            </label>
+            <label>Block</label>
+            {{register.block}} <br>
+            <label class="error">
+                {{register.block.errors}}
+            </label>
+
+             {{register.is_student}}  <!-- do not remove -->
+        <br>
+        <p class="sign-up" style="color: #8F8F8F;"> Already have an account? <a href="{% url 'login' %}"> Log in</a></p>
+            <button class="btn btn-primary btn-lg" type="submit">REGISTER</button>
+    </form>
+    </div>
+    <br>]
+    <br>
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        $("#college").change(function () {
+            const url = $("#personForm").attr("data-cities-url");  // get the url of the `load_cities` view
+            const collegeId = $(this).val();  // get the selected country ID from the HTML input
+    
+            $.ajax({                       // initialize an AJAX request
+                url: url,                    // set the url of the request (= /persons/ajax/load-cities/ )
+                data: {
+                    'college_Id':collegeId     // add the country id to the GET parameters
+                },
+                success: function (data) {   // `data` is the return of the `load_cities` view function
+                    $("#course").html(data);  // replace the contents of the city input with the data that came from the server
+                    /*
+     
+                    let html_data = '<option value="">---------</option>';
+                    data.forEach(function (city) {
+                        html_data += `<option value="${city.id}">${city.name}</option>`
+                    });
+                    console.log(html_data);
+                    $("#id_city").html(html_data);
+     
+                    */
+                }
+            });
+    
+        });
+    </script>
+    
+    
+   </body>
+</html>

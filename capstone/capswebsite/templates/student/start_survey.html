@@ -1,0 +1,151 @@
+{% load static %}
+
+{% include 'student/student_navbar.html' %}
+
+<style>
+    body {
+        margin: 0px;
+        min-height: 100vh;
+        background: linear-gradient(153.3deg, #FCFBFE 61.32%, #D8F2F2 106.14%);
+    }
+
+    .date-time {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 1em;
+        color: #404040;
+        text-align: right;
+        margin-right: 2em;
+    }
+
+    .title {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 2em;
+        text-align: center;
+        margin-top: 5%;
+        margin-bottom: 1em;
+
+        color: #404040;
+    }
+
+    .description {
+        margin: 1% 25%;
+        text-align: left;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 1em;
+        margin-top: 5%;
+    }
+
+    .instructions{
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 1em;
+        height: auto;
+        margin-bottom: 5%;
+    }
+
+    li {
+        float: none;
+    }
+
+    .btn-lg {
+        width: 161.72px;
+        height: 37.33px;
+        color: white;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+
+        background: #42CBCE;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+    }
+
+    .btn-lg:hover {
+        background-color: #92C4C6;
+    }
+
+    a{
+        text-decoration: none;
+        color: #42CBCE;
+    }
+
+    .tree-saly {
+        position: absolute;
+        width: 474px;
+        height: 474px;
+        left: 885px;
+        top: 222px;
+    }
+
+    /******* RESPONSIVENESS *******/
+    @media screen and (max-width: 600px) {
+        .title{
+            margin-top: 10%;
+            margin-bottom: 0px;
+        }
+        .description {
+            margin: 1% 13%;
+            text-align: left;
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            font-size: 1em;
+            height: auto;
+            margin-top: 10%;
+        }
+        .tree-saly {
+            display: none;
+        }
+    }
+
+    @media screen and (min-width: 1920px) {
+        body{
+            zoom: 140%;
+            overflow-x: hidden;
+        }
+    }
+    /******* END RESPONSIVENESS *******/
+</style>
+
+{% block content %}
+
+<p class="date-time">Today is {{date2day}}</p>
+
+
+<p class='title'>Mental Health Survey</p>
+<hr width="20%" color="#D5A106" size="9em">
+
+
+<div class="description">
+    
+    <b><p>Instructions:</p>
+        <ol class="instructions">
+            <li>Please answer the survey in <b>English only.</b></li> <br>
+            <li>Practice <b>gramatically correct</b> sentences and <b>avoid using shortcut words</b>.</li> <br>
+            <li>As much as possible, <b>elaborate and proofread your answer</b> before submitting. This is for the system to get better context of your sentiments.</li>
+        </ol>
+
+    <br> 
+
+
+<a href="{% url 'survey_question' %}">
+    <button class="btn btn-primary btn-lg">LET'S START</button>
+</a>
+
+
+<img src="{% static 'image/tree-saly.png' %}" class="tree-saly">
+
+{% endblock %}
