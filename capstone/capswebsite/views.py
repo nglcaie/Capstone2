@@ -478,15 +478,7 @@ def evaluation(request):
             data_words_quadrams_test = make_quadrams(data_words_trigrams_test)
             #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
             improve_stop_words_test = data_words_quadrams_test
-            clean = []
-            for i in id2word:
-                word = id2word[i]
-            if word in stop_words_improve:
-                clean.append(i)
-                print(clean)
-            else:
-                pass
-            id2word.filter_tokens(bad_ids=set(clean))
+            
             texts_test = improve_stop_words_test
             corpus_test = [id2word.doc2bow(text) for text in texts_test]
             tfidf = TfidfModel(corpus_test,id2word=id2word)
@@ -576,14 +568,7 @@ def evaluation(request):
             data_words_quadrams_test = make_quadrams(data_words_trigrams_test)
             #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
             improve_stop_words_test = data_words_quadrams_test
-            clean = []
-            for i in id2word:
-                word = id2word[i]
-            if word in stop_words_improve:
-                clean.append(i)
-            else:
-                pass
-            id2word.filter_tokens(bad_ids=set(clean))
+            
             texts_test = improve_stop_words_test
             corpus_test = [id2word.doc2bow(text) for text in texts_test]
             tfidf = TfidfModel(corpus_test,id2word=id2word)
@@ -677,13 +662,7 @@ def evaluation(request):
             #improve_stop_words_test = data_words_quadrams_test
             improve_stop_words_test= expand_contractions_improve(data_words_quadrams_test)
             clean = []
-            for i in id2word:
-                word = id2word[i]
-            if word in stop_words_improve:
-                clean.append(i)
-            else:
-                pass
-            id2word.filter_tokens(bad_ids=set(clean))
+            
             texts_test = improve_stop_words_test
             corpus_test = [id2word.doc2bow(text) for text in texts_test]
             tfidf = TfidfModel(corpus_test,id2word=id2word)
@@ -775,14 +754,7 @@ def evaluation(request):
             #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
             #improve_stop_words_test = data_words_quadrams_test
             improve_stop_words_test= expand_contractions_improve(data_words_quadrams_test)
-            clean = []
-            for i in id2word:
-                word = id2word[i]
-            if word in stop_words_improve:
-                clean.append(i)
-            else:
-                pass
-            id2word.filter_tokens(bad_ids=set(clean))
+            
             texts_test = improve_stop_words_test
             corpus_test = [id2word.doc2bow(text) for text in texts_test]
             tfidf = TfidfModel(corpus_test,id2word=id2word)
@@ -871,14 +843,7 @@ def evaluation(request):
             data_words_quadrams_test = make_quadrams(data_words_trigrams_test)
             #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
             improve_stop_words_test = data_words_quadrams_test
-            clean = []
-            for i in id2word:
-                word = id2word[i]
-            if word in stop_words_improve:
-                clean.append(i)
-            else:
-                pass
-            id2word.filter_tokens(bad_ids=set(clean))
+            
             texts_test = improve_stop_words_test
             corpus_test = [id2word.doc2bow(text) for text in texts_test]
             tfidf = TfidfModel(corpus_test,id2word=id2word)
