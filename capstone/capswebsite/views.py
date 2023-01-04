@@ -417,12 +417,13 @@ def evaluation(request):
 
         def cleaning1(raw_data_test):
             #temp_file = datapath('D:\capstone\capstone\capswebsite\model\lda_model1')
-            temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model1'))
-            lda = models.ldamodel.LdaModel.load(temp_file)
-            x1= lda.print_topics()
+            #temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model1'))
+            #lda = models.ldamodel.LdaModel.load(temp_file)
             #dicts = corpora.Dictionary.load('D:\capstone\capstone\capswebsite\model\lda_model1.id2word')
-            id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model1.id2word'))
-            print(id2word)
+            #id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model1.id2word'))
+            lda = models.ldamodel.LdaModel.load('lda_model1')
+            x1= lda.print_topics()
+            id2word = corpora.Dictionary.load('lda_model1.id2word')
             def expand_contractions(inputs):
                 contractions.add('profs', 'professors')
                 contractions.add('professoressors', 'professors')
@@ -505,11 +506,12 @@ def evaluation(request):
 
         def cleaning2(raw_data_test):
             #temp_file = datapath('D:\capstone\capstone\capswebsite\model\lda_model1')
-            temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model2'))
-            lda = models.ldamodel.LdaModel.load(temp_file)
+            #temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model2'))
+            #lda = models.ldamodel.LdaModel.load(temp_file)
+            #id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model2.id2word'))
+            lda = models.ldamodel.LdaModel.load('lda_model2')
             x1= lda.print_topics()
-            #dicts = corpora.Dictionary.load('D:\capstone\capstone\capswebsite\model\lda_model1.id2word')
-            id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model2.id2word'))
+            id2word = corpora.Dictionary.load('lda_model2.id2word')
             def expand_contractions(inputs):
                 contractions.add('profs', 'professors')
                 contractions.add('prof', 'professor')
@@ -597,11 +599,12 @@ def evaluation(request):
 
         def cleaning3(raw_data_test):
             #temp_file = datapath('D:\capstone\capstone\capswebsite\model\lda_model1')
-            temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model3'))
-            lda = models.ldamodel.LdaModel.load(temp_file)
+            #temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model3'))
+            #lda = models.ldamodel.LdaModel.load(temp_file)
+            #id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model3.id2word'))
+            lda = models.ldamodel.LdaModel.load('lda_model3')
             x1= lda.print_topics()
-            #dicts = corpora.Dictionary.load('D:\capstone\capstone\capswebsite\model\lda_model1.id2word')
-            id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model3.id2word'))
+            id2word = corpora.Dictionary.load('lda_model3.id2word')
             def expand_contractions(inputs):
                 contractions.add('profs', 'professors')
                 contractions.add('prof', 'professor')
@@ -690,11 +693,12 @@ def evaluation(request):
 
         def cleaning4(raw_data_test):
             #temp_file = datapath('D:\capstone\capstone\capswebsite\model\lda_model1')
-            temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model4'))
-            lda = models.ldamodel.LdaModel.load(temp_file)
+            #temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model4'))
+            #lda = models.ldamodel.LdaModel.load(temp_file)
+            #id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model4.id2word'))
+            lda = models.ldamodel.LdaModel.load('lda_model4')
             x1= lda.print_topics()
-            #dicts = corpora.Dictionary.load('D:\capstone\capstone\capswebsite\model\lda_model1.id2word')
-            id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model4.id2word'))
+            id2word = corpora.Dictionary.load('lda_model4.id2word')
             def expand_contractions(inputs):
                 contractions.add('profs', 'professors')
                 contractions.add('prof', 'professor')
@@ -782,11 +786,12 @@ def evaluation(request):
 
         def cleaning5(raw_data_test):
             #temp_file = datapath('D:\capstone\capstone\capswebsite\model\lda_model1')
-            temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model5'))
-            lda = models.ldamodel.LdaModel.load(temp_file)
+            #temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model5'))
+            #lda = models.ldamodel.LdaModel.load(temp_file)
+            #id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model5.id2word'))
+            lda = models.ldamodel.LdaModel.load('lda_model5')
             x1= lda.print_topics()
-            #dicts = corpora.Dictionary.load('D:\capstone\capstone\capswebsite\model\lda_model1.id2word')
-            id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model5.id2word'))
+            id2word = corpora.Dictionary.load('lda_model5.id2word')
             def expand_contractions(inputs):
                 contractions.add('profs', 'professors')
                 contractions.add('professoressors', 'professors')
