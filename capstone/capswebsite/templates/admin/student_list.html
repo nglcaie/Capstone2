@@ -195,6 +195,13 @@
         color: white;
     }
 
+    .error {
+        font-size: 13px;
+        font-weight: 800;
+        color: #DA2929;
+        line-height: 10px;
+    }
+
 </style>
 
 {% block content %}
@@ -211,11 +218,15 @@
             <!-- <p>Only accepts CSV files</p> -->
             <br><br>
             <button class="upload-btn" type="submit">Upload</button>
+            <br><br>
+            <label class="error">
+                {% for message in messages %}
+                {{message}}
+                {% endfor %}
+            </label> 
         </div>
     </form>
-    {% for message in messages %}
-    {{message}}
-    {% endfor %} 
+    
 
     <div class="centered-div">
         <div class="top-row">

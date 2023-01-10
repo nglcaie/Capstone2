@@ -167,6 +167,13 @@
         width: 100%;
         margin-left: 10%;
     }
+
+    .error {
+        font-size: 13px;
+        font-weight: 800;
+        color: #DA2929;
+        line-height: 10px;
+    }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
@@ -191,11 +198,14 @@
                 <!-- <p>Only accepts CSV files</p> -->
                 <br><br>
                 <button class="upload-btn" type="submit">Upload</button>
+                <br><br>
+                <label class="error">
+                {% for message in messages %}
+                {{message}}
+                {% endfor %}
+                </label> 
             </div>
         </form>
-        {% for message in messages %}
-        {{message}}
-        {% endfor %}
         </td>
 
         <td>
