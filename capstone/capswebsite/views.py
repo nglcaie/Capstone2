@@ -41,10 +41,11 @@ import gensim
 from gensim.parsing.preprocessing import STOPWORDS
 import gensim.corpora as corpora
 from gensim.utils import simple_preprocess
-from gensim.models.phrases import Phrases
+from gensim.models.phrases import Phrases, Phraser
 from gensim.test.utils import datapath
 from gensim import models
-from gensim.models import TfidfModel
+from gensim.models import TfidfModel 
+from gensim.models.ldamodel import LdaModel
 
 # Plotting tools
 import pyLDAvis
@@ -214,12 +215,12 @@ def word_cloud_gen(raw_data):
     data_words_test = list(sent_to_words(data_test)) #apply tokenization
     data_words_nostops_test = remove_stopwords(data_words_test)
     #forming bigrams and trigrams
-    bigram = gensim.models.Phrases(data_words_nostops_test, min_count=5, threshold=0.5) 
-    trigram = gensim.models.Phrases(bigram[data_words_nostops_test], threshold=0.5)  
-    quadgram = gensim.models.Phrases(trigram[data_words_nostops_test],threshold=0.5)  
-    bigram_mod = gensim.models.phrases.Phraser(bigram)
-    trigram_mod = gensim.models.phrases.Phraser(trigram)
-    quadram_mod = gensim.models.phrases.Phraser(quadgram)
+    bigram = Phrases(data_words_nostops_test, min_count=5, threshold=0.5) 
+    trigram = Phrases(bigram[data_words_nostops_test], threshold=0.5)  
+    quadgram = Phrases(trigram[data_words_nostops_test],threshold=0.5)  
+    bigram_mod = Phraser(bigram)
+    trigram_mod = Phraser(trigram)
+    quadram_mod = Phraser(quadgram)
     def make_bigrams(texts):
         return [bigram_mod[doc] for doc in texts]
     def make_trigrams(texts):
@@ -396,567 +397,555 @@ def evaluation(request):
         if not csvFile.name.endswith('.csv'):
             messages.error(request, 'Please only upload csv file')
         else:
-            param = 'CSV'
-            df_test = pd.read_csv(StringIO(csvFile.read().decode('utf-8')), delimiter=',')
-            df_test['q1']=df_test['question1'].astype(str) #convert type to string
-            df_test['q1']=df_test['q1'].apply(lambda x: x.lower()) #all lowercase
-            df_test['q2']=df_test['question2'].astype(str) #convert type to string
-            df_test['q2']=df_test['q2'].apply(lambda x: x.lower()) #all lowercase
-            df_test['q3']=df_test['question3'].astype(str) #convert type to string
-            df_test['q3']=df_test['q3'].apply(lambda x: x.lower()) #all lowercase
-            df_test['q4']=df_test['question4'].astype(str) #convert type to string
-            df_test['q4']=df_test['q4'].apply(lambda x: x.lower()) #all lowercase
-            df_test['q5']=df_test['question5'].astype(str) #convert type to string
-            df_test['q5']=df_test['q5'].apply(lambda x: x.lower()) #all lowercase
+            question = request.POST.get('question')
+            print(question)
+            if question == 'q1':
+                param = 'CSV'
+                df_test = pd.read_csv(StringIO(csvFile.read().decode('utf-8')), delimiter=',')
+                df_test['q1']=df_test['question1'].astype(str) #convert type to string
+                raw_data_test1 = df_test.q1.values.tolist() #<--covert to list
+                def cleaning1(raw_data_test):
+                    lda = LdaModel.load('lda_model1')
+                    x1= lda.print_topics()
+                    id2word = corpora.Dictionary.load('lda_model1.id2word')
+                    def expand_contractions(inputs):
+                        contractions.add('profs', 'professors')
+                        contractions.add('professoressors', 'professors')
+                        contractions.add('prof', 'professor')
+                        contractions.add('f2f','face to face')
+                        contractions.add('ok','okay')
+                        contractions.add('papa','father')
+                        contractions.add('mom','mother')
+                        contractions.add('assign','assignment')
+                        contractions.add('acads','academics')
+                        contractions.add('acad','academic')
+                        contractions.add('distraction','distractions')
+                        expanded = []
+                        for sent in inputs:
+                            text_out = []
+                            for word in sent.split():
+                                text_out.append(contractions.fix(word))  
+                                expanded_text = ' '.join(text_out)
+                            expanded.append(expanded_text)
+                        return expanded
+                    stop_words = STOPWORDS
+                    stop_words = STOPWORDS.union(set(['know','way','cause','specially','especially','create','come','make','become','like',
+                                        'currently','really','bite','feel','add']))
+                    sw_list = {'cannot','very','much','lot','to','no','anything','own','just','everything','no','yes','not'}
+                    stop_words = stop_words.difference(sw_list)
+                    def remove_stopwords(texts):
+                        return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
+                    stop_words_improve = STOPWORDS
+                    stop_words_improve = STOPWORDS.union(set(['to_point','want_to','difficult_to','hard_to','able_to','tend_to','not_able_to','unable_to']))
+                    #def remove_stopwords_improve(texts):
+                        #return [[word for word in simple_preprocess(str(doc)) if word not in stop_words_improve] for doc in texts]
+                    #application of contraction,tokenization,lemmatization,stop_words
+                    data_test = expand_contractions(raw_data_test)
+                    data_words_test = list(sent_to_words(data_test)) #apply tokenization
+                    data_lemmatized_test = lemmatization(data_words_test)
+                    data_words_nostops_test = remove_stopwords(data_lemmatized_test)
+                    #forming bigrams and trigrams
+                    bigram = Phrases(data_words_nostops_test, min_count=2, threshold=5) 
+                    trigram = Phrases(bigram[data_words_nostops_test], threshold=5)  
+                    quadgram = Phrases(trigram[data_words_nostops_test],threshold=5)  
+                    bigram_mod = Phraser(bigram)
+                    trigram_mod = Phraser(trigram)
+                    quadram_mod = Phraser(quadgram)
+                    def make_bigrams(texts):
+                        return [bigram_mod[doc] for doc in texts]
+                    def make_trigrams(texts):
+                        return [trigram_mod[bigram_mod[doc]] for doc in texts]
+                    def make_quadrams(texts):
+                        return [quadram_mod[trigram_mod[bigram_mod[doc]]] for doc in texts]
+                    #application of n-grams
+                    data_words_bigrams_test = make_bigrams(data_words_nostops_test)
+                    data_words_trigrams_test = make_trigrams(data_words_bigrams_test)
+                    data_words_quadrams_test = make_quadrams(data_words_trigrams_test)
+                    #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
+                    improve_stop_words_test = data_words_quadrams_test
+                    
+                    texts_test = improve_stop_words_test
+                    corpus_test = [id2word.doc2bow(text) for text in texts_test]
+                    tfidf = TfidfModel(corpus_test,id2word=id2word)
+                    low_value = 0.03
+                    words = []
+                    words_missing_in_tfidf = [] #reinitialize to be safe. You can skip this
+                    for i in range(0, len(corpus_test)):
+                        bow = corpus_test[i]
+                        low_value_words = []
+                        tfidf_ids = [id for id, value in tfidf[bow]]
+                        bow_ids =  [id for id, value in bow]
+                        low_value_words  = [id for id, value in tfidf[bow] if value < low_value]
+                        drops =  low_value_words+words_missing_in_tfidf
+                        for item in drops:
+                            words.append(id2word[item])
+                        words_missing_in_tfidf = [id for id in bow_ids if id not in tfidf_ids] #The words with tf-idf score 0 will be missing
+                        new_bow  =  [b for b in bow if b[0] not in low_value_words and b[0]  not in words_missing_in_tfidf]
+                        corpus_test[i] =  new_bow
+                    unseen_doc = corpus_test
+                    vector = lda[unseen_doc]
+                    lda.update(corpus_test)
+                    vector = lda[unseen_doc]
+                    return improve_stop_words_test,texts_test,corpus_test,lda
 
-            raw_data_test1 = df_test.q1.values.tolist() #<--covert to list
-            raw_data_test2 = df_test.q2.values.tolist() #<--covert to list
-            raw_data_test3 = df_test.q3.values.tolist() #<--covert to list
-            raw_data_test4 = df_test.q4.values.tolist() #<--covert to list
-            raw_data_test5 = df_test.q5.values.tolist() #<--covert to list
+                improve_stop_words_test1,texts_test1,corpus_test1,lda_model1 = cleaning1(raw_data_test1)
+                #dominant and weightage
+                dominant_topics1, topic_percentages1 = topics_per_document(model=lda_model1, corpus=corpus_test1, end=-1)
+                dom_plot1 = distrib_dominant(dominant_topics1,lda_model1,20)
+                weightage_plot1 = weightage_topic(topic_percentages1,lda_model1,20)
+                word_list1 = topic_list(lda_model1,20)
+                count_graph1 = word_count_graph(lda_model1,20,improve_stop_words_test1,4,5)
+                q = "1. How does your environment affect your studying?"
+                context['q'] = q
+                context['dominant1'] = dom_plot1
+                context['weightage1'] = weightage_plot1
+                context['word_list1'] = word_list1
+                context['count_graph1'] = count_graph1
+                context['param'] = param
+            elif question == 'q2':
+                param = 'CSV'
+                df_test = pd.read_csv(StringIO(csvFile.read().decode('utf-8')), delimiter=',')
+                df_test['q2']=df_test['question2'].astype(str) #convert type to string
+                raw_data_test1 = df_test.q2.values.tolist() #<--covert to list
+                def cleaning2(raw_data_test):
+                    lda = LdaModel.load('lda_model2')
+                    x1= lda.print_topics()
+                    id2word = corpora.Dictionary.load('lda_model2.id2word')
+                    def expand_contractions(inputs):
+                        contractions.add('profs', 'professors')
+                        contractions.add('prof', 'professor')
+                        contractions.add('f2f','face to face')
+                        contractions.add('ok','okay')
+                        contractions.add('exams','examinations')
+                        contractions.add('exam','examination')
+                        contractions.add('sem','semester')
+                        contractions.add('professoressors','professors')
+                        contractions.add('final','finals')
+                        contractions.add('acads','academics')
+                        contractions.add('acad','academics')
+                        contractions.add('assigns','assignments')
+                        contractions.add('assign','assignments')
+                        expanded = []
+                        for sent in inputs:
+                            text_out = []
+                            for word in sent.split():
+                                text_out.append(contractions.fix(word))  
+                                expanded_text = ' '.join(text_out)
+                            expanded.append(expanded_text)
+                        return expanded
+                    stop_words = STOPWORDS
+                    stop_words = STOPWORDS.union(set(['react','date','specially','think','far','honestly','foo','come','ask','look','past','end','nott',
+                                        'pretty','gon','si','thing','slightly','lately','anymore','especially','haha','cause','guess','usually','like',
+                                        'know','currently','actually','let','felt','past','use','bite','try']))
+                    sw_list = {'cannot','very','much','lot','to','no','anything','own','just','everything','well','no','yes','not'}
+                    stop_words = stop_words.difference(sw_list)
+                    def remove_stopwords(texts):
+                        return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
+                    stop_words_improve = STOPWORDS
+                    stop_words_improve = STOPWORDS.union(set(['just_want','want_to','able_to']))
+                    #def remove_stopwords_improve(texts):
+                        #return [[word for word in simple_preprocess(str(doc)) if word not in stop_words_improve] for doc in texts]
+                    #application of contraction,tokenization,lemmatization,stop_words
+                    data_test = expand_contractions(raw_data_test)
+                    data_words_test = list(sent_to_words(data_test)) #apply tokenization
+                    data_lemmatized_test = lemmatization(data_words_test)
+                    data_words_nostops_test = remove_stopwords(data_lemmatized_test)
+                    #forming bigrams and trigrams
+                    bigram = Phrases(data_words_nostops_test, min_count=2, threshold=5) 
+                    trigram = Phrases(bigram[data_words_nostops_test], threshold=5)  
+                    quadgram = Phrases(trigram[data_words_nostops_test],threshold=5)  
+                    bigram_mod = Phraser(bigram)
+                    trigram_mod = Phraser(trigram)
+                    quadram_mod = Phraser(quadgram)
+                    def make_bigrams(texts):
+                        return [bigram_mod[doc] for doc in texts]
+                    def make_trigrams(texts):
+                        return [trigram_mod[bigram_mod[doc]] for doc in texts]
+                    def make_quadrams(texts):
+                        return [quadram_mod[trigram_mod[bigram_mod[doc]]] for doc in texts]
+                    #application of n-grams
+                    data_words_bigrams_test = make_bigrams(data_words_nostops_test)
+                    data_words_trigrams_test = make_trigrams(data_words_bigrams_test)
+                    data_words_quadrams_test = make_quadrams(data_words_trigrams_test)
+                    #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
+                    improve_stop_words_test = data_words_quadrams_test
+                    texts_test = improve_stop_words_test
+                    corpus_test = [id2word.doc2bow(text) for text in texts_test]
+                    tfidf = TfidfModel(corpus_test,id2word=id2word)
+                    low_value = 0.05
+                    words = []
+                    words_missing_in_tfidf = [] #reinitialize to be safe. You can skip this
+                    for i in range(0, len(corpus_test)):
+                        bow = corpus_test[i]
+                        low_value_words = []
+                        tfidf_ids = [id for id, value in tfidf[bow]]
+                        bow_ids =  [id for id, value in bow]
+                        low_value_words  = [id for id, value in tfidf[bow] if value < low_value]
+                        drops =  low_value_words+words_missing_in_tfidf
+                        for item in drops:
+                            words.append(id2word[item])
+                        words_missing_in_tfidf = [id for id in bow_ids if id not in tfidf_ids] #The words with tf-idf score 0 will be missing
 
-        def cleaning1(raw_data_test):
-            #temp_file = datapath('D:\capstone\capstone\capswebsite\model\lda_model1')
-            #temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model1'))
-            #lda = models.ldamodel.LdaModel.load(temp_file)
-            #dicts = corpora.Dictionary.load('D:\capstone\capstone\capswebsite\model\lda_model1.id2word')
-            #id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model1.id2word'))
-            lda = models.ldamodel.LdaModel.load('lda_model1')
-            x1= lda.print_topics()
-            id2word = corpora.Dictionary.load('lda_model1.id2word')
-            def expand_contractions(inputs):
-                contractions.add('profs', 'professors')
-                contractions.add('professoressors', 'professors')
-                contractions.add('prof', 'professor')
-                contractions.add('f2f','face to face')
-                contractions.add('ok','okay')
-                contractions.add('papa','father')
-                contractions.add('mom','mother')
-                contractions.add('assign','assignment')
-                contractions.add('acads','academics')
-                contractions.add('acad','academic')
-                contractions.add('distraction','distractions')
-                expanded = []
-                for sent in inputs:
-                    text_out = []
-                    for word in sent.split():
-                        text_out.append(contractions.fix(word))  
-                        expanded_text = ' '.join(text_out)
-                    expanded.append(expanded_text)
-                return expanded
-            stop_words = STOPWORDS
-            stop_words = STOPWORDS.union(set(['know','way','cause','specially','especially','create','come','make','become','like',
-                                  'currently','really','bite','feel','add']))
-            sw_list = {'cannot','very','much','lot','to','no','anything','own','just','everything','no','yes','not'}
-            stop_words = stop_words.difference(sw_list)
-            def remove_stopwords(texts):
-                return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
-            stop_words_improve = STOPWORDS
-            stop_words_improve = STOPWORDS.union(set(['to_point','want_to','difficult_to','hard_to','able_to','tend_to','not_able_to','unable_to']))
-            #def remove_stopwords_improve(texts):
-                #return [[word for word in simple_preprocess(str(doc)) if word not in stop_words_improve] for doc in texts]
-            #application of contraction,tokenization,lemmatization,stop_words
-            data_test = expand_contractions(raw_data_test)
-            data_words_test = list(sent_to_words(data_test)) #apply tokenization
-            data_lemmatized_test = lemmatization(data_words_test)
-            data_words_nostops_test = remove_stopwords(data_lemmatized_test)
-            #forming bigrams and trigrams
-            bigram = gensim.models.Phrases(data_words_nostops_test, min_count=2, threshold=5) 
-            trigram = gensim.models.Phrases(bigram[data_words_nostops_test], threshold=5)  
-            quadgram = gensim.models.Phrases(trigram[data_words_nostops_test],threshold=5)  
-            bigram_mod = gensim.models.phrases.Phraser(bigram)
-            trigram_mod = gensim.models.phrases.Phraser(trigram)
-            quadram_mod = gensim.models.phrases.Phraser(quadgram)
-            def make_bigrams(texts):
-                return [bigram_mod[doc] for doc in texts]
-            def make_trigrams(texts):
-                return [trigram_mod[bigram_mod[doc]] for doc in texts]
-            def make_quadrams(texts):
-                return [quadram_mod[trigram_mod[bigram_mod[doc]]] for doc in texts]
-            #application of n-grams
-            data_words_bigrams_test = make_bigrams(data_words_nostops_test)
-            data_words_trigrams_test = make_trigrams(data_words_bigrams_test)
-            data_words_quadrams_test = make_quadrams(data_words_trigrams_test)
-            #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
-            improve_stop_words_test = data_words_quadrams_test
-            
-            texts_test = improve_stop_words_test
-            corpus_test = [id2word.doc2bow(text) for text in texts_test]
-            tfidf = TfidfModel(corpus_test,id2word=id2word)
-            low_value = 0.03
-            words = []
-            words_missing_in_tfidf = [] #reinitialize to be safe. You can skip this
-            for i in range(0, len(corpus_test)):
-                bow = corpus_test[i]
-                low_value_words = []
-                tfidf_ids = [id for id, value in tfidf[bow]]
-                bow_ids =  [id for id, value in bow]
-                low_value_words  = [id for id, value in tfidf[bow] if value < low_value]
-                drops =  low_value_words+words_missing_in_tfidf
-                for item in drops:
-                    words.append(id2word[item])
-                words_missing_in_tfidf = [id for id in bow_ids if id not in tfidf_ids] #The words with tf-idf score 0 will be missing
-                new_bow  =  [b for b in bow if b[0] not in low_value_words and b[0]  not in words_missing_in_tfidf]
-                corpus_test[i] =  new_bow
-            unseen_doc = corpus_test
-            vector = lda[unseen_doc]
-            lda.update(corpus_test)
-            vector = lda[unseen_doc]
-            return improve_stop_words_test,texts_test,corpus_test,lda
+                        new_bow  =  [b for b in bow if b[0] not in low_value_words and b[0]  not in words_missing_in_tfidf]
+                        corpus_test[i] =  new_bow
+                    unseen_doc = corpus_test
+                    vector = lda[unseen_doc]
+                    lda.update(corpus_test)
+                    vector = lda[unseen_doc]
+                    return improve_stop_words_test,texts_test,corpus_test,lda
 
-        def cleaning2(raw_data_test):
-            #temp_file = datapath('D:\capstone\capstone\capswebsite\model\lda_model1')
-            #temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model2'))
-            #lda = models.ldamodel.LdaModel.load(temp_file)
-            #id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model2.id2word'))
-            lda = models.ldamodel.LdaModel.load('lda_model2')
-            x1= lda.print_topics()
-            id2word = corpora.Dictionary.load('lda_model2.id2word')
-            def expand_contractions(inputs):
-                contractions.add('profs', 'professors')
-                contractions.add('prof', 'professor')
-                contractions.add('f2f','face to face')
-                contractions.add('ok','okay')
-                contractions.add('exams','examinations')
-                contractions.add('exam','examination')
-                contractions.add('sem','semester')
-                contractions.add('professoressors','professors')
-                contractions.add('final','finals')
-                contractions.add('acads','academics')
-                contractions.add('acad','academics')
-                contractions.add('assigns','assignments')
-                contractions.add('assign','assignments')
-                expanded = []
-                for sent in inputs:
-                    text_out = []
-                    for word in sent.split():
-                        text_out.append(contractions.fix(word))  
-                        expanded_text = ' '.join(text_out)
-                    expanded.append(expanded_text)
-                return expanded
-            stop_words = STOPWORDS
-            stop_words = STOPWORDS.union(set(['react','date','specially','think','far','honestly','foo','come','ask','look','past','end','nott',
-                                  'pretty','gon','si','thing','slightly','lately','anymore','especially','haha','cause','guess','usually','like',
-                                  'know','currently','actually','let','felt','past','use','bite','try']))
-            sw_list = {'cannot','very','much','lot','to','no','anything','own','just','everything','well','no','yes','not'}
-            stop_words = stop_words.difference(sw_list)
-            def remove_stopwords(texts):
-                return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
-            stop_words_improve = STOPWORDS
-            stop_words_improve = STOPWORDS.union(set(['just_want','want_to','able_to']))
-            #def remove_stopwords_improve(texts):
-                #return [[word for word in simple_preprocess(str(doc)) if word not in stop_words_improve] for doc in texts]
-            #application of contraction,tokenization,lemmatization,stop_words
-            data_test = expand_contractions(raw_data_test)
-            data_words_test = list(sent_to_words(data_test)) #apply tokenization
-            data_lemmatized_test = lemmatization(data_words_test)
-            data_words_nostops_test = remove_stopwords(data_lemmatized_test)
-            #forming bigrams and trigrams
-            bigram = gensim.models.Phrases(data_words_nostops_test, min_count=2, threshold=5) 
-            trigram = gensim.models.Phrases(bigram[data_words_nostops_test], threshold=5)  
-            quadgram = gensim.models.Phrases(trigram[data_words_nostops_test],threshold=5)  
-            bigram_mod = gensim.models.phrases.Phraser(bigram)
-            trigram_mod = gensim.models.phrases.Phraser(trigram)
-            quadram_mod = gensim.models.phrases.Phraser(quadgram)
-            def make_bigrams(texts):
-                return [bigram_mod[doc] for doc in texts]
-            def make_trigrams(texts):
-                return [trigram_mod[bigram_mod[doc]] for doc in texts]
-            def make_quadrams(texts):
-                return [quadram_mod[trigram_mod[bigram_mod[doc]]] for doc in texts]
-            #application of n-grams
-            data_words_bigrams_test = make_bigrams(data_words_nostops_test)
-            data_words_trigrams_test = make_trigrams(data_words_bigrams_test)
-            data_words_quadrams_test = make_quadrams(data_words_trigrams_test)
-            #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
-            improve_stop_words_test = data_words_quadrams_test
-            
-            texts_test = improve_stop_words_test
-            corpus_test = [id2word.doc2bow(text) for text in texts_test]
-            tfidf = TfidfModel(corpus_test,id2word=id2word)
-            low_value = 0.05
-            words = []
-            words_missing_in_tfidf = [] #reinitialize to be safe. You can skip this
-            for i in range(0, len(corpus_test)):
-                bow = corpus_test[i]
-                low_value_words = []
-                tfidf_ids = [id for id, value in tfidf[bow]]
-                bow_ids =  [id for id, value in bow]
-                low_value_words  = [id for id, value in tfidf[bow] if value < low_value]
-                drops =  low_value_words+words_missing_in_tfidf
-                for item in drops:
-                    words.append(id2word[item])
-                words_missing_in_tfidf = [id for id in bow_ids if id not in tfidf_ids] #The words with tf-idf score 0 will be missing
+                improve_stop_words_test1,texts_test1,corpus_test1,lda_model1 = cleaning2(raw_data_test1)
+                #dominant and weightage
+                dominant_topics1, topic_percentages1 = topics_per_document(model=lda_model1, corpus=corpus_test1, end=-1)
+                dom_plot1 = distrib_dominant(dominant_topics1,lda_model1,15)
+                weightage_plot1 = weightage_topic(topic_percentages1,lda_model1,15)
+                word_list1 = topic_list(lda_model1,15)
+                count_graph1 = word_count_graph(lda_model1,15,improve_stop_words_test1,3,5)
+                q = "2. How do you feel about the workload that is given to you during online classes?"
+                context['q'] = q
+                context['dominant1'] = dom_plot1
+                context['weightage1'] = weightage_plot1
+                context['word_list1'] = word_list1
+                context['count_graph1'] = count_graph1
+                context['param'] = param
+            elif question == 'q3':
+                param = 'CSV'
+                df_test = pd.read_csv(StringIO(csvFile.read().decode('utf-8')), delimiter=',')
+                df_test['q3']=df_test['question3'].astype(str) #convert type to string
+                raw_data_test1 = df_test.q3.values.tolist() #<--covert to list
+                def cleaning3(raw_data_test):
+                    #temp_file = datapath('D:\capstone\capstone\capswebsite\model\lda_model1')
+                    #temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model3'))
+                    #lda = models.ldamodel.LdaModel.load(temp_file)
+                    #id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model3.id2word'))
+                    lda = LdaModel.load('lda_model3')
+                    x1= lda.print_topics()
+                    id2word = corpora.Dictionary.load('lda_model3.id2word')
+                    def expand_contractions(inputs):
+                        contractions.add('profs', 'professors')
+                        contractions.add('prof', 'professor')
+                        contractions.add('f2f','face to face')
+                        contractions.add('ok','okay')
+                        contractions.add('hrs','hours')
+                        expanded = []
+                        for sent in inputs:
+                            text_out = []
+                            for word in sent.split():
+                                text_out.append(contractions.fix(word))  
+                                expanded_text = ' '.join(text_out)
+                            expanded.append(expanded_text)
+                        return expanded
+                    def expand_contractions_improve(inputs):
+                        contractions.add('mentally_physically', 'physically_mentally')
+                        contractions.add('mentally_physically_fatigue', 'physically_mentally_fatigue')
+                        expanded = []
+                        for sent in inputs:
+                            text_out = []
+                            for word in sent:
+                                text_out.append(contractions.fix(word))  
+                            expanded.append(text_out)
+                        return expanded
+                    stop_words = STOPWORDS
+                    stop_words = STOPWORDS.union(set(['actually', 'bite', 'wear', 'sure', 'things', 'definitely']))
+                    sw_list = {'cannot','not','do','can','should','would','very','much','too','lot','really','to','sometimes','of','does','no'}
+                    stop_words = stop_words.difference(sw_list)
+                    def remove_stopwords(texts):
+                        return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
+                    stop_words_improve = STOPWORDS
+                    stop_words_improve = STOPWORDS.union(set(['physically', 'mentally', 'physically_mentally', 'mentally_physically']))
+                    #def remove_stopwords_improve(texts):
+                        #return [[word for word in simple_preprocess(str(doc)) if word not in stop_words_improve] for doc in texts]
+                    #application of contraction,tokenization,lemmatization,stop_words
+                    data_test = expand_contractions(raw_data_test)
+                    data_words_test = list(sent_to_words(data_test)) #apply tokenization
+                    data_lemmatized_test = lemmatization(data_words_test)
+                    data_words_nostops_test = remove_stopwords(data_lemmatized_test)
+                    #forming bigrams and trigrams
+                    bigram = Phrases(data_words_nostops_test, min_count=2, threshold=5) 
+                    trigram = Phrases(bigram[data_words_nostops_test], threshold=5)  
+                    quadgram = Phrases(trigram[data_words_nostops_test],threshold=5)  
+                    bigram_mod = Phraser(bigram)
+                    trigram_mod = Phraser(trigram)
+                    quadram_mod = Phraser(quadgram)
+                    def make_bigrams(texts):
+                        return [bigram_mod[doc] for doc in texts]
+                    def make_trigrams(texts):
+                        return [trigram_mod[bigram_mod[doc]] for doc in texts]
+                    def make_quadrams(texts):
+                        return [quadram_mod[trigram_mod[bigram_mod[doc]]] for doc in texts]
+                    #application of n-grams
+                    data_words_bigrams_test = make_bigrams(data_words_nostops_test)
+                    data_words_trigrams_test = make_trigrams(data_words_bigrams_test)
+                    data_words_quadrams_test = make_quadrams(data_words_trigrams_test)
+                    #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
+                    #improve_stop_words_test = data_words_quadrams_test
+                    improve_stop_words_test= expand_contractions_improve(data_words_quadrams_test)
+                    clean = []
+                    
+                    texts_test = improve_stop_words_test
+                    corpus_test = [id2word.doc2bow(text) for text in texts_test]
+                    tfidf = TfidfModel(corpus_test,id2word=id2word)
+                    low_value = 0.05
+                    words = []
+                    words_missing_in_tfidf = [] #reinitialize to be safe. You can skip this
+                    for i in range(0, len(corpus_test)):
+                        bow = corpus_test[i]
+                        low_value_words = []
+                        tfidf_ids = [id for id, value in tfidf[bow]]
+                        bow_ids =  [id for id, value in bow]
+                        low_value_words  = [id for id, value in tfidf[bow] if value < low_value]
+                        drops =  low_value_words+words_missing_in_tfidf
+                        for item in drops:
+                            words.append(id2word[item])
+                        words_missing_in_tfidf = [id for id in bow_ids if id not in tfidf_ids] #The words with tf-idf score 0 will be missing
 
-                new_bow  =  [b for b in bow if b[0] not in low_value_words and b[0]  not in words_missing_in_tfidf]
-                corpus_test[i] =  new_bow
-            unseen_doc = corpus_test
-            vector = lda[unseen_doc]
-            lda.update(corpus_test)
-            vector = lda[unseen_doc]
-            return improve_stop_words_test,texts_test,corpus_test,lda
+                        new_bow  =  [b for b in bow if b[0] not in low_value_words and b[0]  not in words_missing_in_tfidf]
+                        corpus_test[i] =  new_bow
+                    unseen_doc = corpus_test
+                    vector = lda[unseen_doc]
+                    lda.update(corpus_test)
+                    vector = lda[unseen_doc]
+                    return improve_stop_words_test,texts_test,corpus_test,lda
+                improve_stop_words_test1,texts_test1,corpus_test1,lda_model1 = cleaning3(raw_data_test1)
+                #dominant and weightage
+                dominant_topics1, topic_percentages1 = topics_per_document(model=lda_model1, corpus=corpus_test1, end=-1)
+                dom_plot1 = distrib_dominant(dominant_topics1,lda_model1,20)
+                weightage_plot1 = weightage_topic(topic_percentages1,lda_model1,20)
+                word_list1 = topic_list(lda_model1,20)
+                count_graph1 = word_count_graph(lda_model1,20,improve_stop_words_test1,4,5)
+                q = "3. What can you say about your physical health in relation to online learning?"
+                context['q'] = q
+                context['dominant1'] = dom_plot1
+                context['weightage1'] = weightage_plot1
+                context['word_list1'] = word_list1
+                context['count_graph1'] = count_graph1
+                context['param'] = param
+            elif question == 'q4':
+                param = 'CSV'
+                df_test = pd.read_csv(StringIO(csvFile.read().decode('utf-8')), delimiter=',')
+                df_test['q4']=df_test['question4'].astype(str) #convert type to string
+                raw_data_test1 = df_test.q4.values.tolist() #<--covert to list
+                def cleaning4(raw_data_test):
+                    #temp_file = datapath('D:\capstone\capstone\capswebsite\model\lda_model1')
+                    #temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model4'))
+                    #lda = models.ldamodel.LdaModel.load(temp_file)
+                    #id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model4.id2word'))
+                    lda = LdaModel.load('lda_model4')
+                    x1= lda.print_topics()
+                    id2word = corpora.Dictionary.load('lda_model4.id2word')
+                    def expand_contractions(inputs):
+                        contractions.add('profs', 'professors')
+                        contractions.add('prof', 'professor')
+                        contractions.add('f2f','face to face')
+                        contractions.add('ok','okay')
+                        contractions.add('hrs','hours')
+                        expanded = []
+                        for sent in inputs:
+                            text_out = []
+                            for word in sent.split():
+                                text_out.append(contractions.fix(word))  
+                                expanded_text = ' '.join(text_out)
+                            expanded.append(expanded_text)
+                        return expanded
+                    def expand_contractions_improve(inputs):
+                        contractions.add('mentally_physically', 'physically_mentally')
+                        contractions.add('mentally_physically_fatigue', 'physically_mentally_fatigue')
+                        expanded = []
+                        for sent in inputs:
+                            text_out = []
+                            for word in sent:
+                                text_out.append(contractions.fix(word))  
+                            expanded.append(text_out)
+                        return expanded
+                    stop_words = STOPWORDS
+                    stop_words = STOPWORDS.union(set(['yes', 'meet', 'come', 'bite']))
+                    sw_list = {'cannot','not','do','can','should','would','very','much','too','lot','really','to','sometimes','of','does','no'}
+                    stop_words = stop_words.difference(sw_list)
+                    def remove_stopwords(texts):
+                        return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
+                    stop_words_improve = STOPWORDS
+                    stop_words_improve = STOPWORDS.union(set(['face_to']))
+                    #def remove_stopwords_improve(texts):
+                        #return [[word for word in simple_preprocess(str(doc)) if word not in stop_words_improve] for doc in texts]
+                    #application of contraction,tokenization,lemmatization,stop_words
+                    data_test = expand_contractions(raw_data_test)
+                    data_words_test = list(sent_to_words(data_test)) #apply tokenization
+                    data_lemmatized_test = lemmatization(data_words_test)
+                    data_words_nostops_test = remove_stopwords(data_lemmatized_test)
+                    #forming bigrams and trigrams
+                    bigram = Phrases(data_words_nostops_test, min_count=2, threshold=5) 
+                    trigram = Phrases(bigram[data_words_nostops_test], threshold=5)  
+                    quadgram = Phrases(trigram[data_words_nostops_test],threshold=5)  
+                    bigram_mod = Phraser(bigram)
+                    trigram_mod = Phraser(trigram)
+                    quadram_mod = Phraser(quadgram)
+                    def make_bigrams(texts):
+                        return [bigram_mod[doc] for doc in texts]
+                    def make_trigrams(texts):
+                        return [trigram_mod[bigram_mod[doc]] for doc in texts]
+                    def make_quadrams(texts):
+                        return [quadram_mod[trigram_mod[bigram_mod[doc]]] for doc in texts]
+                    #application of n-grams
+                    data_words_bigrams_test = make_bigrams(data_words_nostops_test)
+                    data_words_trigrams_test = make_trigrams(data_words_bigrams_test)
+                    data_words_quadrams_test = make_quadrams(data_words_trigrams_test)
+                    #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
+                    #improve_stop_words_test = data_words_quadrams_test
+                    improve_stop_words_test= expand_contractions_improve(data_words_quadrams_test)
+                    
+                    texts_test = improve_stop_words_test
+                    corpus_test = [id2word.doc2bow(text) for text in texts_test]
+                    tfidf = TfidfModel(corpus_test,id2word=id2word)
+                    low_value = 0.05
+                    words = []
+                    words_missing_in_tfidf = [] #reinitialize to be safe. You can skip this
+                    for i in range(0, len(corpus_test)):
+                        bow = corpus_test[i]
+                        low_value_words = []
+                        tfidf_ids = [id for id, value in tfidf[bow]]
+                        bow_ids =  [id for id, value in bow]
+                        low_value_words  = [id for id, value in tfidf[bow] if value < low_value]
+                        drops =  low_value_words+words_missing_in_tfidf
+                        for item in drops:
+                            words.append(id2word[item])
+                        words_missing_in_tfidf = [id for id in bow_ids if id not in tfidf_ids] #The words with tf-idf score 0 will be missing
 
+                        new_bow  =  [b for b in bow if b[0] not in low_value_words and b[0]  not in words_missing_in_tfidf]
+                        corpus_test[i] =  new_bow
+                    unseen_doc = corpus_test
+                    vector = lda[unseen_doc]
+                    lda.update(corpus_test)
+                    vector = lda[unseen_doc]
+                    return improve_stop_words_test,texts_test,corpus_test,lda   
+                improve_stop_words_test1,texts_test1,corpus_test1,lda_model1 = cleaning4(raw_data_test1)
+                #dominant and weightage
+                dominant_topics1, topic_percentages1 = topics_per_document(model=lda_model1, corpus=corpus_test1, end=-1)
+                dom_plot1 = distrib_dominant(dominant_topics1,lda_model1,20)
+                weightage_plot1 = weightage_topic(topic_percentages1,lda_model1,20)
+                word_list1 = topic_list(lda_model1,20)
+                count_graph1 = word_count_graph(lda_model1,20,improve_stop_words_test1,4,5)
+                q = "4. Can you say that your motivation decreased in an online set-up? If yes, how?"
+                context['q'] = q
+                context['dominant1'] = dom_plot1
+                context['weightage1'] = weightage_plot1
+                context['word_list1'] = word_list1
+                context['count_graph1'] = count_graph1
+                context['param'] = param
+            else:
+                param = 'CSV'
+                df_test = pd.read_csv(StringIO(csvFile.read().decode('utf-8')), delimiter=',')
+                df_test['q5']=df_test['question5'].astype(str) #convert type to string
+                raw_data_test1 = df_test.q5.values.tolist() #<--covert to list
+                def cleaning5(raw_data_test):
+                    #temp_file = datapath('D:\capstone\capstone\capswebsite\model\lda_model1')
+                    #temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model5'))
+                    #lda = models.ldamodel.LdaModel.load(temp_file)
+                    #id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model5.id2word'))
+                    lda = LdaModel.load('lda_model5')
+                    x1= lda.print_topics()
+                    id2word = corpora.Dictionary.load('lda_model5.id2word')
+                    def expand_contractions(inputs):
+                        contractions.add('profs', 'professors')
+                        contractions.add('professoressors', 'professors')
+                        contractions.add('prof', 'professor')
+                        contractions.add('f2f','face to face')
+                        contractions.add('ok','okay')
+                        contractions.add('papa','father')
+                        contractions.add('mom','mother')
+                        contractions.add('assign','assignment')
+                        contractions.add('acads','academics')
+                        contractions.add('acad','academics')
+                        expanded = []
+                        for sent in inputs:
+                            text_out = []
+                            for word in sent.split():
+                                text_out.append(contractions.fix(word))  
+                                expanded_text = ' '.join(text_out)
+                            expanded.append(expanded_text)
+                        return expanded
+                    stop_words = STOPWORDS
+                    stop_words = STOPWORDS.union(set(['yes','tree','know','way','cause','specially','especially','create','come','ung','make','become','like','also','able',
+                                        'currently','really','have','lot', 'belong', 'bond', 'people', 'person', 'aside', 'ypur', 'house', 'anymore', 
+                                        'mean', 'use', 'happen', 'add', 'certain', 'feel', 'honestly', 'rise', 'sisters', 'ny', 'term',
+                                        'think', 'felt', 'long', 'lessen', 'small', 'real', 'daughter', 'reason']))
+                    sw_list = {'cannot','not','do','can','should','would','very','much','too','lot','alot','really','to','sometimes','of','does','no', 'of'}
+                    stop_words = stop_words.difference(sw_list)
+                    def remove_stopwords(texts):
+                        return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
+                    stop_words_improve = STOPWORDS
+                    stop_words_improve = STOPWORDS.union(set(['do_not', 'of ways', 'instead of']))
+                    #def remove_stopwords_improve(texts):
+                        #return [[word for word in simple_preprocess(str(doc)) if word not in stop_words_improve] for doc in texts]
+                    #application of contraction,tokenization,lemmatization,stop_words
+                    data_test = expand_contractions(raw_data_test)
+                    data_words_test = list(sent_to_words(data_test)) #apply tokenization
+                    data_lemmatized_test = lemmatization(data_words_test)
+                    data_words_nostops_test = remove_stopwords(data_lemmatized_test)
+                    #forming bigrams and trigrams
+                    bigram = Phrases(data_words_nostops_test, min_count=2, threshold=5) 
+                    trigram = Phrases(bigram[data_words_nostops_test], threshold=5)  
+                    quadgram = Phrases(trigram[data_words_nostops_test],threshold=5)  
+                    bigram_mod = Phraser(bigram)
+                    trigram_mod = Phraser(trigram)
+                    quadram_mod = Phraser(quadgram)
+                    def make_bigrams(texts):
+                        return [bigram_mod[doc] for doc in texts]
+                    def make_trigrams(texts):
+                        return [trigram_mod[bigram_mod[doc]] for doc in texts]
+                    def make_quadrams(texts):
+                        return [quadram_mod[trigram_mod[bigram_mod[doc]]] for doc in texts]
+                    #application of n-grams
+                    data_words_bigrams_test = make_bigrams(data_words_nostops_test)
+                    data_words_trigrams_test = make_trigrams(data_words_bigrams_test)
+                    data_words_quadrams_test = make_quadrams(data_words_trigrams_test)
+                    #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
+                    improve_stop_words_test = data_words_quadrams_test
+                    
+                    texts_test = improve_stop_words_test
+                    corpus_test = [id2word.doc2bow(text) for text in texts_test]
+                    tfidf = TfidfModel(corpus_test,id2word=id2word)
+                    low_value = 0.02
+                    words = []
+                    words_missing_in_tfidf = [] #reinitialize to be safe. You can skip this
+                    for i in range(0, len(corpus_test)):
+                        bow = corpus_test[i]
+                        low_value_words = []
+                        tfidf_ids = [id for id, value in tfidf[bow]]
+                        bow_ids =  [id for id, value in bow]
+                        low_value_words  = [id for id, value in tfidf[bow] if value < low_value]
+                        drops =  low_value_words+words_missing_in_tfidf
+                        for item in drops:
+                            words.append(id2word[item])
+                        words_missing_in_tfidf = [id for id in bow_ids if id not in tfidf_ids] #The words with tf-idf score 0 will be missing
 
-        def cleaning3(raw_data_test):
-            #temp_file = datapath('D:\capstone\capstone\capswebsite\model\lda_model1')
-            #temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model3'))
-            #lda = models.ldamodel.LdaModel.load(temp_file)
-            #id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model3.id2word'))
-            lda = models.ldamodel.LdaModel.load('lda_model3')
-            x1= lda.print_topics()
-            id2word = corpora.Dictionary.load('lda_model3.id2word')
-            def expand_contractions(inputs):
-                contractions.add('profs', 'professors')
-                contractions.add('prof', 'professor')
-                contractions.add('f2f','face to face')
-                contractions.add('ok','okay')
-                contractions.add('hrs','hours')
-                expanded = []
-                for sent in inputs:
-                    text_out = []
-                    for word in sent.split():
-                        text_out.append(contractions.fix(word))  
-                        expanded_text = ' '.join(text_out)
-                    expanded.append(expanded_text)
-                return expanded
-            def expand_contractions_improve(inputs):
-                contractions.add('mentally_physically', 'physically_mentally')
-                contractions.add('mentally_physically_fatigue', 'physically_mentally_fatigue')
-                expanded = []
-                for sent in inputs:
-                    text_out = []
-                    for word in sent:
-                        text_out.append(contractions.fix(word))  
-                    expanded.append(text_out)
-                return expanded
-            stop_words = STOPWORDS
-            stop_words = STOPWORDS.union(set(['actually', 'bite', 'wear', 'sure', 'things', 'definitely']))
-            sw_list = {'cannot','not','do','can','should','would','very','much','too','lot','really','to','sometimes','of','does','no'}
-            stop_words = stop_words.difference(sw_list)
-            def remove_stopwords(texts):
-                return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
-            stop_words_improve = STOPWORDS
-            stop_words_improve = STOPWORDS.union(set(['physically', 'mentally', 'physically_mentally', 'mentally_physically']))
-            #def remove_stopwords_improve(texts):
-                #return [[word for word in simple_preprocess(str(doc)) if word not in stop_words_improve] for doc in texts]
-            #application of contraction,tokenization,lemmatization,stop_words
-            data_test = expand_contractions(raw_data_test)
-            data_words_test = list(sent_to_words(data_test)) #apply tokenization
-            data_lemmatized_test = lemmatization(data_words_test)
-            data_words_nostops_test = remove_stopwords(data_lemmatized_test)
-            #forming bigrams and trigrams
-            bigram = gensim.models.Phrases(data_words_nostops_test, min_count=2, threshold=5) 
-            trigram = gensim.models.Phrases(bigram[data_words_nostops_test], threshold=5)  
-            quadgram = gensim.models.Phrases(trigram[data_words_nostops_test],threshold=5)  
-            bigram_mod = gensim.models.phrases.Phraser(bigram)
-            trigram_mod = gensim.models.phrases.Phraser(trigram)
-            quadram_mod = gensim.models.phrases.Phraser(quadgram)
-            def make_bigrams(texts):
-                return [bigram_mod[doc] for doc in texts]
-            def make_trigrams(texts):
-                return [trigram_mod[bigram_mod[doc]] for doc in texts]
-            def make_quadrams(texts):
-                return [quadram_mod[trigram_mod[bigram_mod[doc]]] for doc in texts]
-            #application of n-grams
-            data_words_bigrams_test = make_bigrams(data_words_nostops_test)
-            data_words_trigrams_test = make_trigrams(data_words_bigrams_test)
-            data_words_quadrams_test = make_quadrams(data_words_trigrams_test)
-            #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
-            #improve_stop_words_test = data_words_quadrams_test
-            improve_stop_words_test= expand_contractions_improve(data_words_quadrams_test)
-            clean = []
-            
-            texts_test = improve_stop_words_test
-            corpus_test = [id2word.doc2bow(text) for text in texts_test]
-            tfidf = TfidfModel(corpus_test,id2word=id2word)
-            low_value = 0.05
-            words = []
-            words_missing_in_tfidf = [] #reinitialize to be safe. You can skip this
-            for i in range(0, len(corpus_test)):
-                bow = corpus_test[i]
-                low_value_words = []
-                tfidf_ids = [id for id, value in tfidf[bow]]
-                bow_ids =  [id for id, value in bow]
-                low_value_words  = [id for id, value in tfidf[bow] if value < low_value]
-                drops =  low_value_words+words_missing_in_tfidf
-                for item in drops:
-                    words.append(id2word[item])
-                words_missing_in_tfidf = [id for id in bow_ids if id not in tfidf_ids] #The words with tf-idf score 0 will be missing
+                        new_bow  =  [b for b in bow if b[0] not in low_value_words and b[0]  not in words_missing_in_tfidf]
+                        corpus_test[i] =  new_bow
+                    unseen_doc = corpus_test
+                    vector = lda[unseen_doc]
+                    lda.update(corpus_test)
+                    vector = lda[unseen_doc]
+                    return improve_stop_words_test,texts_test,corpus_test,lda
 
-                new_bow  =  [b for b in bow if b[0] not in low_value_words and b[0]  not in words_missing_in_tfidf]
-                corpus_test[i] =  new_bow
-            unseen_doc = corpus_test
-            vector = lda[unseen_doc]
-            lda.update(corpus_test)
-            vector = lda[unseen_doc]
-            return improve_stop_words_test,texts_test,corpus_test,lda
-
-        def cleaning4(raw_data_test):
-            #temp_file = datapath('D:\capstone\capstone\capswebsite\model\lda_model1')
-            #temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model4'))
-            #lda = models.ldamodel.LdaModel.load(temp_file)
-            #id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model4.id2word'))
-            lda = models.ldamodel.LdaModel.load('lda_model4')
-            x1= lda.print_topics()
-            id2word = corpora.Dictionary.load('lda_model4.id2word')
-            def expand_contractions(inputs):
-                contractions.add('profs', 'professors')
-                contractions.add('prof', 'professor')
-                contractions.add('f2f','face to face')
-                contractions.add('ok','okay')
-                contractions.add('hrs','hours')
-                expanded = []
-                for sent in inputs:
-                    text_out = []
-                    for word in sent.split():
-                        text_out.append(contractions.fix(word))  
-                        expanded_text = ' '.join(text_out)
-                    expanded.append(expanded_text)
-                return expanded
-            def expand_contractions_improve(inputs):
-                contractions.add('mentally_physically', 'physically_mentally')
-                contractions.add('mentally_physically_fatigue', 'physically_mentally_fatigue')
-                expanded = []
-                for sent in inputs:
-                    text_out = []
-                    for word in sent:
-                        text_out.append(contractions.fix(word))  
-                    expanded.append(text_out)
-                return expanded
-            stop_words = STOPWORDS
-            stop_words = STOPWORDS.union(set(['yes', 'meet', 'come', 'bite']))
-            sw_list = {'cannot','not','do','can','should','would','very','much','too','lot','really','to','sometimes','of','does','no'}
-            stop_words = stop_words.difference(sw_list)
-            def remove_stopwords(texts):
-                return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
-            stop_words_improve = STOPWORDS
-            stop_words_improve = STOPWORDS.union(set(['face_to']))
-            #def remove_stopwords_improve(texts):
-                #return [[word for word in simple_preprocess(str(doc)) if word not in stop_words_improve] for doc in texts]
-            #application of contraction,tokenization,lemmatization,stop_words
-            data_test = expand_contractions(raw_data_test)
-            data_words_test = list(sent_to_words(data_test)) #apply tokenization
-            data_lemmatized_test = lemmatization(data_words_test)
-            data_words_nostops_test = remove_stopwords(data_lemmatized_test)
-            #forming bigrams and trigrams
-            bigram = gensim.models.Phrases(data_words_nostops_test, min_count=2, threshold=5) 
-            trigram = gensim.models.Phrases(bigram[data_words_nostops_test], threshold=5)  
-            quadgram = gensim.models.Phrases(trigram[data_words_nostops_test],threshold=5)  
-            bigram_mod = gensim.models.phrases.Phraser(bigram)
-            trigram_mod = gensim.models.phrases.Phraser(trigram)
-            quadram_mod = gensim.models.phrases.Phraser(quadgram)
-            def make_bigrams(texts):
-                return [bigram_mod[doc] for doc in texts]
-            def make_trigrams(texts):
-                return [trigram_mod[bigram_mod[doc]] for doc in texts]
-            def make_quadrams(texts):
-                return [quadram_mod[trigram_mod[bigram_mod[doc]]] for doc in texts]
-            #application of n-grams
-            data_words_bigrams_test = make_bigrams(data_words_nostops_test)
-            data_words_trigrams_test = make_trigrams(data_words_bigrams_test)
-            data_words_quadrams_test = make_quadrams(data_words_trigrams_test)
-            #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
-            #improve_stop_words_test = data_words_quadrams_test
-            improve_stop_words_test= expand_contractions_improve(data_words_quadrams_test)
-            
-            texts_test = improve_stop_words_test
-            corpus_test = [id2word.doc2bow(text) for text in texts_test]
-            tfidf = TfidfModel(corpus_test,id2word=id2word)
-            low_value = 0.05
-            words = []
-            words_missing_in_tfidf = [] #reinitialize to be safe. You can skip this
-            for i in range(0, len(corpus_test)):
-                bow = corpus_test[i]
-                low_value_words = []
-                tfidf_ids = [id for id, value in tfidf[bow]]
-                bow_ids =  [id for id, value in bow]
-                low_value_words  = [id for id, value in tfidf[bow] if value < low_value]
-                drops =  low_value_words+words_missing_in_tfidf
-                for item in drops:
-                    words.append(id2word[item])
-                words_missing_in_tfidf = [id for id in bow_ids if id not in tfidf_ids] #The words with tf-idf score 0 will be missing
-
-                new_bow  =  [b for b in bow if b[0] not in low_value_words and b[0]  not in words_missing_in_tfidf]
-                corpus_test[i] =  new_bow
-            unseen_doc = corpus_test
-            vector = lda[unseen_doc]
-            lda.update(corpus_test)
-            vector = lda[unseen_doc]
-            return improve_stop_words_test,texts_test,corpus_test,lda            
-
-        def cleaning5(raw_data_test):
-            #temp_file = datapath('D:\capstone\capstone\capswebsite\model\lda_model1')
-            #temp_file = datapath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model5'))
-            #lda = models.ldamodel.LdaModel.load(temp_file)
-            #id2word = corpora.Dictionary.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static\model\lda_model5.id2word'))
-            lda = models.ldamodel.LdaModel.load('lda_model5')
-            x1= lda.print_topics()
-            id2word = corpora.Dictionary.load('lda_model5.id2word')
-            def expand_contractions(inputs):
-                contractions.add('profs', 'professors')
-                contractions.add('professoressors', 'professors')
-                contractions.add('prof', 'professor')
-                contractions.add('f2f','face to face')
-                contractions.add('ok','okay')
-                contractions.add('papa','father')
-                contractions.add('mom','mother')
-                contractions.add('assign','assignment')
-                contractions.add('acads','academics')
-                contractions.add('acad','academics')
-                expanded = []
-                for sent in inputs:
-                    text_out = []
-                    for word in sent.split():
-                        text_out.append(contractions.fix(word))  
-                        expanded_text = ' '.join(text_out)
-                    expanded.append(expanded_text)
-                return expanded
-            stop_words = STOPWORDS
-            stop_words = STOPWORDS.union(set(['yes','tree','know','way','cause','specially','especially','create','come','ung','make','become','like','also','able',
-                                  'currently','really','have','lot', 'belong', 'bond', 'people', 'person', 'aside', 'ypur', 'house', 'anymore', 
-                                  'mean', 'use', 'happen', 'add', 'certain', 'feel', 'honestly', 'rise', 'sisters', 'ny', 'term',
-                                  'think', 'felt', 'long', 'lessen', 'small', 'real', 'daughter', 'reason']))
-            sw_list = {'cannot','not','do','can','should','would','very','much','too','lot','alot','really','to','sometimes','of','does','no', 'of'}
-            stop_words = stop_words.difference(sw_list)
-            def remove_stopwords(texts):
-                return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
-            stop_words_improve = STOPWORDS
-            stop_words_improve = STOPWORDS.union(set(['do_not', 'of ways', 'instead of']))
-            #def remove_stopwords_improve(texts):
-                #return [[word for word in simple_preprocess(str(doc)) if word not in stop_words_improve] for doc in texts]
-            #application of contraction,tokenization,lemmatization,stop_words
-            data_test = expand_contractions(raw_data_test)
-            data_words_test = list(sent_to_words(data_test)) #apply tokenization
-            data_lemmatized_test = lemmatization(data_words_test)
-            data_words_nostops_test = remove_stopwords(data_lemmatized_test)
-            #forming bigrams and trigrams
-            bigram = gensim.models.Phrases(data_words_nostops_test, min_count=2, threshold=5) 
-            trigram = gensim.models.Phrases(bigram[data_words_nostops_test], threshold=5)  
-            quadgram = gensim.models.Phrases(trigram[data_words_nostops_test],threshold=5)  
-            bigram_mod = gensim.models.phrases.Phraser(bigram)
-            trigram_mod = gensim.models.phrases.Phraser(trigram)
-            quadram_mod = gensim.models.phrases.Phraser(quadgram)
-            def make_bigrams(texts):
-                return [bigram_mod[doc] for doc in texts]
-            def make_trigrams(texts):
-                return [trigram_mod[bigram_mod[doc]] for doc in texts]
-            def make_quadrams(texts):
-                return [quadram_mod[trigram_mod[bigram_mod[doc]]] for doc in texts]
-            #application of n-grams
-            data_words_bigrams_test = make_bigrams(data_words_nostops_test)
-            data_words_trigrams_test = make_trigrams(data_words_bigrams_test)
-            data_words_quadrams_test = make_quadrams(data_words_trigrams_test)
-            #improve_stop_words_test = remove_stopwords_improve(data_words_quadrams_test)
-            improve_stop_words_test = data_words_quadrams_test
-            
-            texts_test = improve_stop_words_test
-            corpus_test = [id2word.doc2bow(text) for text in texts_test]
-            tfidf = TfidfModel(corpus_test,id2word=id2word)
-            low_value = 0.02
-            words = []
-            words_missing_in_tfidf = [] #reinitialize to be safe. You can skip this
-            for i in range(0, len(corpus_test)):
-                bow = corpus_test[i]
-                low_value_words = []
-                tfidf_ids = [id for id, value in tfidf[bow]]
-                bow_ids =  [id for id, value in bow]
-                low_value_words  = [id for id, value in tfidf[bow] if value < low_value]
-                drops =  low_value_words+words_missing_in_tfidf
-                for item in drops:
-                    words.append(id2word[item])
-                words_missing_in_tfidf = [id for id in bow_ids if id not in tfidf_ids] #The words with tf-idf score 0 will be missing
-
-                new_bow  =  [b for b in bow if b[0] not in low_value_words and b[0]  not in words_missing_in_tfidf]
-                corpus_test[i] =  new_bow
-            unseen_doc = corpus_test
-            vector = lda[unseen_doc]
-            lda.update(corpus_test)
-            vector = lda[unseen_doc]
-            return improve_stop_words_test,texts_test,corpus_test,lda
-    
-        #question1   
-        improve_stop_words_test1,texts_test1,corpus_test1,lda_model1 = cleaning1(raw_data_test1)
-        #dominant and weightage
-        dominant_topics1, topic_percentages1 = topics_per_document(model=lda_model1, corpus=corpus_test1, end=-1)
-        dom_plot1 = distrib_dominant(dominant_topics1,lda_model1,20)
-        weightage_plot1 = weightage_topic(topic_percentages1,lda_model1,20)
-        word_list1 = topic_list(lda_model1,20)
-        count_graph1 = word_count_graph(lda_model1,20,improve_stop_words_test1,4,5)
-
-        #question2
-        improve_stop_words_test2,texts_test2,corpus_test2,lda_model2= cleaning2(raw_data_test2)
-        #dominant and weightage
-        dominant_topics2, topic_percentages2 = topics_per_document(model=lda_model2, corpus=corpus_test2, end=-1)
-        dom_plot2 = distrib_dominant(dominant_topics2,lda_model2,15)
-        weightage_plot2 = weightage_topic(topic_percentages2,lda_model2,15)
-        word_list2 = topic_list(lda_model2,20)
-        count_graph2 = word_count_graph(lda_model2,15,improve_stop_words_test2,3,5)
-
-        #question3
-        improve_stop_words_test3,texts_test3,corpus_test3,lda_model3= cleaning3(raw_data_test3)
-        #dominant and weightage
-        dominant_topics3, topic_percentages3 = topics_per_document(model=lda_model3, corpus=corpus_test3, end=-1)
-        dom_plot3 = distrib_dominant(dominant_topics3,lda_model3,20)
-        weightage_plot3 = weightage_topic(topic_percentages3,lda_model3,20)
-        word_list3 = topic_list(lda_model3,25)
-        count_graph3 = word_count_graph(lda_model3,25,improve_stop_words_test3,4,5)
-
-        #question4
-        improve_stop_words_test4,texts_test4,corpus_test4,lda_model4= cleaning4(raw_data_test4)
-        #dominant and weightage
-        dominant_topics4, topic_percentages4 = topics_per_document(model=lda_model4, corpus=corpus_test4, end=-1)
-        dom_plot4 = distrib_dominant(dominant_topics4,lda_model4,20)
-        weightage_plot4 = weightage_topic(topic_percentages4,lda_model4,20)
-        word_list4 = topic_list(lda_model4,30)
-        count_graph4 = word_count_graph(lda_model4,30,improve_stop_words_test4,4,5)
-
-        #question5
-        improve_stop_words_test5,texts_test5,corpus_test5,lda_model5= cleaning5(raw_data_test5)
-        #dominant and weightage
-        dominant_topics5, topic_percentages5 = topics_per_document(model=lda_model5, corpus=corpus_test5, end=-1)
-        dom_plot5 = distrib_dominant(dominant_topics5,lda_model5,20)
-        weightage_plot5 = weightage_topic(topic_percentages5,lda_model5,20)
-        word_list5 = topic_list(lda_model5,20)
-        count_graph5 = word_count_graph(lda_model5,20,improve_stop_words_test5,4,5)
-
-
-        #q1
-        context['dominant1'] = dom_plot1
-        context['weightage1'] = weightage_plot1
-        context['word_list1'] = word_list1
-        context['count_graph1'] = count_graph1
-        #q2
-        context['dominant2'] = dom_plot2
-        context['weightage2'] = weightage_plot2
-        context['word_list2'] = word_list2
-        context['count_graph2'] = count_graph2
-        #q3
-        context['dominant3'] = dom_plot3
-        context['weightage3'] = weightage_plot3
-        context['word_list3'] = word_list3
-        context['count_graph3'] = count_graph3
-        #4
-        context['dominant4'] = dom_plot4
-        context['weightage4'] = weightage_plot4
-        context['word_list4'] = word_list4
-        context['count_graph4'] = count_graph4
-        #5
-        context['dominant5'] = dom_plot5
-        context['weightage5'] = weightage_plot5
-        context['word_list5'] = word_list5
-        context['count_graph5'] = count_graph5
-        
-        context['param'] = param
-        #pprint(lda.print_topics())
-        #x1= lda_model1.print_topics()
-        #context['x1'] = x1
-        #x2= lda_model2.print_topics()
-        #context['x2'] = x2
+                improve_stop_words_test1,texts_test1,corpus_test1,lda_model1 = cleaning5(raw_data_test1)
+                #dominant and weightage
+                dominant_topics1, topic_percentages1 = topics_per_document(model=lda_model1, corpus=corpus_test1, end=-1)
+                dom_plot1 = distrib_dominant(dominant_topics1,lda_model1,20)
+                weightage_plot1 = weightage_topic(topic_percentages1,lda_model1,20)
+                word_list1 = topic_list(lda_model1,20)
+                count_graph1 = word_count_graph(lda_model1,20,improve_stop_words_test1,4,5)
+                q = "5. How do you think your socioeconomic status affects your mental health during online class?"
+                context['q'] = q
+                context['dominant1'] = dom_plot1
+                context['weightage1'] = weightage_plot1
+                context['word_list1'] = word_list1
+                context['count_graph1'] = count_graph1
+                context['param'] = param
+                context['date2day'] = date2day
+                context['day2day'] = day2day
     context['param'] = param
     context['date2day'] = date2day
     context['day2day'] = day2day
     #context['day'] = day
-    
     return render(request, 'admin/evaluation.html',context)
 
  

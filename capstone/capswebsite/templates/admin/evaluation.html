@@ -167,7 +167,6 @@
         width: 100%;
         margin-left: 10%;
     }
-
     .error {
         font-size: 13px;
         font-weight: 800;
@@ -188,6 +187,7 @@
 
 <p class="date-time">Today is {{date2day}}</p>
     <table class="table">
+      <tr>
         <td>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -195,34 +195,40 @@
                 <label>Upload CSV File</label>
                 <br><br>
                 <input class="choose-file" type="file" name="file">
+                <br><br>
+                <p>Please choose the question to evaluate:</p>
+                  <input type="radio" id="question" name="question" value="q1" required>
+                  <label for="q1">1. How does your environment affect your studying? </label><br>
+                  <input type="radio" id="question" name="question" value="q2">
+                  <label for="q2">2. How do you feel about the workload that is given to you during online classes? </label><br>
+                  <input type="radio" id="question" name="question" value="q3">
+                  <label for="q3">3. What can you say about your physical health in relation to online learning?  </label><br>
+                  <input type="radio" id="question" name="question" value="q4">
+                  <label for="q4">4. Can you say that your motivation decreased in an online set-up? If yes, how? </label><br>
+                  <input type="radio" id="question" name="question" value="q5">
+                  <label for="q5">5. How do you think your socioeconomic status affects your mental health during online class? </label><br>
                 <!-- <p>Only accepts CSV files</p> -->
-                <br><br>
+                <br>
                 <button class="upload-btn" type="submit">Upload</button>
-                <br><br>
-                <label class="error">
-                {% for message in messages %}
-                {{message}}
-                {% endfor %}
-                </label> 
             </div>
         </form>
+        <br><br><br>
+        <label class="error">
+          {% for message in messages %}
+          {{message}}
+          {% endfor %}
+          </label> 
         </td>
-
+      </tr>
+      <tr>
         <td>
-        <br><br>
-        <a class="jump" href="#Q1">Jump to Question 1</a> <br>
-        <a class="jump" href="#Q2">Jump to Question 2</a> <br>
-        <a class="jump" href="#Q3">Jump to Question 3</a> <br>
-        <a class="jump" href="#Q4">Jump to Question 4</a> <br>
-        <a class="jump" href="#Q5">Jump to Question 5</a><br>
         <a class="jump" href="{% url 'word_cloud_page' %}">See Word Cloud</a>
         </td>
+      </tr>
     </table>
 {% if param == "Empty" %}
-                
     <div class="visualization">
     </div>         
-
     <div class="container">
         <div class="accordion" id="accordionExample">
             <div class="card" style="border-radius:20px">
@@ -317,16 +323,16 @@
         <!-- Question 1 -->
         <div class="analysis"> 
             
-            <span id="Q1">Question #1</span>
+            <span id="Q1">Question:</span>
             <br><br>
-            1. How does your environment affect your studying?
+            {{q}}
             <br><br><br>    
                 <div class="accordion" id="accordionExample">
                     <div class="card" style="border-radius:20px">
                       <div class="card-header" id="headingOne">
                         <h2 class="mb-0">
                           <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                             Keyword list and Word Count in Topics
+                             Keyword list
                           </button>
                         </h2>
                       </div>
@@ -354,158 +360,12 @@
         </div>
         
         <!-- Question 2 -->
-        <div class="analysis"> 
-            
-            <span id="Q2">Question #2</span>
-            <br><br>
-            2. How do you feel about the workload that is given to you during online classes?
-            <br><br><br>    
-                <div class="accordion" id="accordionExample">
-                    <div class="card" style="border-radius:20px">
-                      <div class="card-header" id="headingOne">
-                        <h2 class="mb-0">
-                          <button class="btn bt-link" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                            Keyword list and Word Count in Topics
-                          </button>
-                        </h2>
-                      </div>
-                  
-                      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-                        <div class="card-body">
-                            {% for topic in word_list2 %}
-                            {{topic}}
-                            <br><br>
-                            {%endfor%}
-                            <br>
-                            <img class="plt-pic" src='data:image/png;base64,{{ count_graph2 }}'>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-            <div class="visualization">
-            
-                <img class="plt-pic" src='data:image/png;base64,{{ dominant2 }}'>
-                <br><br>
-                <img class="plt-pic" src='data:image/png;base64,{{ weightage2 }}'>
-            
-            </div>
-           
-        </div>
+
 
         <!-- Question 3 -->
-        <div class="analysis"> 
-            
-            <span id="Q3">Question #3</span>
-            <br><br>
-            3. What can you say about your physical health in relation to online learning? (Sleep quality, physical activity, feelings of mental or physical fatigue, etc.)
-            <br><br><br>
-            <div class="accordion" id="accordionExample">
-                <div class="card" style="border-radius:20px">
-                  <div class="card-header" id="headingOne">
-                    <h2 class="mb-0">
-                      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-                        Keyword list and Word Count in Topics
-                      </button>
-                    </h2>
-                  </div>
-              
-                  <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-                    <div class="card-body">
-                    {% for topic in word_list3 %}
-                        {{topic}}
-                        <br><br>
-                    {%endfor%}
-                    <br>
-                    <img class="plt-pic" src='data:image/png;base64,{{ count_graph3 }}'>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <br>
-            <div class="visualization">
-            
-                <img class="plt-pic" src='data:image/png;base64,{{ dominant3 }}'>
-                <br><br>
-                <img class="plt-pic" src='data:image/png;base64,{{ weightage3 }}'>
-            
-            </div>
-        </div>
 
         <!-- Question 4 -->
-        <div class="analysis"> 
-            
-            <span id="Q4">Question #4</span>
-            <br><br>
-            4. Can you say that your motivation decreased in an online set-up? If yes, how?
-            <br><br><br>
-            <div class="accordion" id="accordionExample">
-                <div class="card" style="border-radius:20px">
-                  <div class="card-header" id="headingOne">
-                    <h2 class="mb-0">
-                      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
-                        Keyword list and Word Count in Topics
-                      </button>
-                    </h2>
-                  </div>
-                  <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
-                    <div class="card-body">
-                        {% for topic in word_list4 %}
-                        {{topic}}
-                        <br><br>
-                    {%endfor%}
-                    <br>
-                    <img class="plt-pic" src='data:image/png;base64,{{ count_graph4 }}'>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <br>
-            <div class="visualization">
-            
-                <img class="plt-pic" src='data:image/png;base64,{{ dominant4 }}'>
-                <br><br>
-                <img class="plt-pic" src='data:image/png;base64,{{ weightage4 }}'>
-            
-            </div>
-        </div>
-
         <!-- Question 5 -->
-        <div class="analysis"> 
-            
-            <span id="Q5">Question #5</span>
-            <br><br>
-            5. How do you think your socioeconomic status affects your mental health during online class?
-            <br><br><br>
-            <div class="accordion" id="accordionExample">
-                <div class="card" style="border-radius:20px">
-                  <div class="card-header" id="headingOne">
-                    <h2 class="mb-0">
-                      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
-                        Keyword list and Word Count in Topics
-                      </button>
-                    </h2>
-                  </div>
-              
-                  <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordionExample">
-                    <div class="card-body">
-                        {% for topic in word_list5 %}
-                        {{topic}}
-                        <br><br>
-                    {%endfor%}
-                    <br>
-                    <img class="plt-pic" src='data:image/png;base64,{{ count_graph5 }}'>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <div class="visualization">
-            
-                <img class="plt-pic" src='data:image/png;base64,{{ dominant5 }}'>
-                <br><br>
-                <img class="plt-pic" src='data:image/png;base64,{{ weightage5 }}'>
-            
-            </div>
-        </div>
 {% endif %}
 </div>
 
